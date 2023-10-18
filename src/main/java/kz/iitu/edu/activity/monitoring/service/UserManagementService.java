@@ -13,10 +13,9 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class UserManagementService {
-
     private final FirebaseAuth firebaseAuth;
 
-    public void setUserClaims(String uid, List<Role> requestedPermissions) throws FirebaseAuthException {
+    public void setUserClaims(String uid, List<Role> requestedPermissions) {
         List<String> permissions = requestedPermissions
                 .stream()
                 .map(Enum::toString)
@@ -24,6 +23,10 @@ public class UserManagementService {
 
         Map<String, Object> claims = Map.of("custom_claims", permissions);
 
-        firebaseAuth.setCustomUserClaims(uid, claims);
+        try {
+            firebaseAuth.setCustomUserClaims(uid, claims);
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

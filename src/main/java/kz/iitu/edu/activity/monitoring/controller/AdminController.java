@@ -13,16 +13,11 @@ import java.util.List;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
-
     private final UserManagementService userManagementService;
 
     @PreAuthorize(value="hasRole('ROLE_ANONYMOUS')")
     @PostMapping(path = "/user-claims/{uid}")
-    public void setUserClaims(
-            @PathVariable String uid,
-            @RequestBody List<Role> requestedClaims
-    ) throws FirebaseAuthException {
+    public void setUserClaims(@PathVariable String uid, @RequestBody List<Role> requestedClaims) {
         userManagementService.setUserClaims(uid, requestedClaims);
     }
-
 }

@@ -20,16 +20,18 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration {
-    @Value("${spring.security.oauth2.resource.server.jwt.jwk-set-uri}")
-    private final String JWK_SET_URI = null;
+    //whitelist endpoints don't work
     private static final String[] ENDPOINTS_WHITELIST = {
             "admin/user-claims/**"
     };
+    @Value("${spring.security.oauth2.resource.server.jwt.jwk-set-uri}")
+    private final String JWK_SET_URI = null;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(request ->
-                request.requestMatchers(ENDPOINTS_WHITELIST).permitAll()
-                        .anyRequest().authenticated());
+//        http.authorizeRequests(request ->
+//                request.requestMatchers(ENDPOINTS_WHITELIST).permitAll()
+//                        .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(Customizer.withDefaults()));
@@ -37,6 +39,7 @@ public class SecurityConfiguration {
 //                .csrf().disable());
         return http.build();
     }
+
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
