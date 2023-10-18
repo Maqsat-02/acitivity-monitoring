@@ -15,13 +15,8 @@ import java.util.Map;
 public class UserManagementService {
     private final FirebaseAuth firebaseAuth;
 
-    public void setUserClaims(String uid, List<Role> requestedPermissions) {
-        List<String> permissions = requestedPermissions
-                .stream()
-                .map(Enum::toString)
-                .toList();
-
-        Map<String, Object> claims = Map.of("custom_claims", permissions);
+    public void setUserClaims(String uid, List<String> requestedPermissions) {
+        Map<String, Object> claims = Map.of("custom_claims", requestedPermissions);
 
         try {
             firebaseAuth.setCustomUserClaims(uid, claims);

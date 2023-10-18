@@ -19,8 +19,8 @@ public class AdminController {
     private final UserManagementService userManagementService;
 
 //    @PreAuthorize(value="hasRole('ROLE_ANONYMOUS')")
-    @PostMapping(path = "/user-claims/{uid}")
-    public void setUserClaims(@PathVariable String uid) {
-        userManagementService.setUserClaims(uid, Collections.singletonList(PRODUCT_MANAGER));
+    @PostMapping(path = "/user-claims/{uid}/{role}")
+    public void setUserClaims(@PathVariable String uid, @PathVariable String role) {
+        userManagementService.setUserClaims(uid, Collections.singletonList(role));
     }
 }
