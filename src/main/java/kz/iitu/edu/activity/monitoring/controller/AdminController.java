@@ -4,10 +4,13 @@ import com.google.firebase.auth.FirebaseAuthException;
 import kz.iitu.edu.activity.monitoring.security.Role;
 import kz.iitu.edu.activity.monitoring.service.UserManagementService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+
+import static kz.iitu.edu.activity.monitoring.security.Role.PRODUCT_MANAGER;
 
 @RestController
 @RequestMapping("/admin")
@@ -15,9 +18,9 @@ import java.util.List;
 public class AdminController {
     private final UserManagementService userManagementService;
 
-    @PreAuthorize(value="hasRole('ROLE_ANONYMOUS')")
+//    @PreAuthorize(value="hasRole('ROLE_ANONYMOUS')")
     @PostMapping(path = "/user-claims/{uid}")
-    public void setUserClaims(@PathVariable String uid, @RequestBody List<Role> requestedClaims) {
-        userManagementService.setUserClaims(uid, requestedClaims);
+    public void setUserClaims(@PathVariable String uid) {
+        userManagementService.setUserClaims(uid, Collections.singletonList(PRODUCT_MANAGER));
     }
 }
