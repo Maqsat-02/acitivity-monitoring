@@ -2,17 +2,19 @@ package kz.iitu.edu.activity.monitoring.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "activity")
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class Activity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,7 +60,10 @@ public class Activity {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "activity")
-    private Set<ActivityLog> activityLogs;
+    private List<ActivityLog> activityLogs;
+
+    @OneToMany(mappedBy = "activity")
+    private List<TextItem> textItems;
 
     @PrePersist
     private void setCreatedAtAndUpdatedAt() {

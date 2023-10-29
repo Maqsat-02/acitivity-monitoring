@@ -2,6 +2,7 @@ package kz.iitu.edu.activity.monitoring.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,9 +11,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "remark")
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class Remark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +25,7 @@ public class Remark {
     private Review review;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "translation_item_id", referencedColumnName = "id")
+    @JoinColumn(name = "translation_item_id", referencedColumnName = "id", nullable = false)
     private TranslationItem translationItem;
 
     @Column(nullable = false)

@@ -2,6 +2,7 @@ package kz.iitu.edu.activity.monitoring.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,16 +10,17 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "translation_item")
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class TranslationItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "text_item_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "text_item_id", referencedColumnName = "id", nullable = false)
     private TextItem textItem;
 
     @ManyToOne
