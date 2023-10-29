@@ -3,15 +3,19 @@ package kz.iitu.edu.activity.monitoring.config;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.Properties;
 
+@Configuration
+@EnableTransactionManagement
 public class JpaConfig {
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
@@ -42,7 +46,7 @@ public class JpaConfig {
     private Properties hibernateProperties() {
         Properties props = new Properties();
 
-        props.put("hibernate.dll-auto", "create");
+        props.put("hibernate.hbm2ddl.auto", "create");
 
         // Fetching
         props.put("hibernate.jdbc.batch_size", 10);
