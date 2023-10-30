@@ -1,11 +1,12 @@
 package kz.iitu.edu.activity.monitoring;
 
+import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
 import kz.iitu.edu.activity.monitoring.mapper.ProjectMapper;
-import kz.iitu.edu.activity.monitoring.mapper.ProjectMapperUtil;
 import kz.iitu.edu.activity.monitoring.repository.FirebaseUserRepository;
+import kz.iitu.edu.activity.monitoring.service.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class StartupRunner implements CommandLineRunner {
     private final FirebaseUserRepository userRepository;
-    private final ProjectMapperUtil projectMapperUtil;
+    private final ProjectService projectService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -41,6 +42,27 @@ public class StartupRunner implements CommandLineRunner {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        System.out.println(projectMapperUtil.entityToDto(project));
+//        ProjectCreationReq projectCreationReq1 = ProjectCreationReq
+//                .builder()
+//                .name("Name1")
+//                .description("Description1")
+//                .chiefEditorId("AR3yg7gYTMTTm8VBLXIWrSgnssc2")
+//                .build();
+//        ProjectCreationReq projectCreationReq2 = ProjectCreationReq
+//                .builder()
+//                .name("Name2")
+//                .description("Description2")
+//                .chiefEditorId("AR3yg7gYTMTTm8VBLXIWrSgnssc2")
+//                .build();
+//        ProjectCreationReq projectCreationReq3 = ProjectCreationReq
+//                .builder()
+//                .name("Name3")
+//                .description("Description3")
+//                .chiefEditorId("AR3yg7gYTMTTm8VBLXIWrSgnssc2")
+//                .build();
+//        projectService.createProject(projectCreationReq1, "3BgCu717aSR5DwCLgXMQIAWCTJM2");
+//        projectService.createProject(projectCreationReq2, "3BgCu717aSR5DwCLgXMQIAWCTJM2");
+//        projectService.createProject(projectCreationReq3, "3BgCu717aSR5DwCLgXMQIAWCTJM2");
+        System.out.println(projectService.entityToDto(project));
     }
 }

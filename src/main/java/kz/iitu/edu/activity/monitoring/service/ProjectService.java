@@ -9,7 +9,12 @@ import kz.iitu.edu.activity.monitoring.mapper.ProjectMapper;
 import kz.iitu.edu.activity.monitoring.repository.FirebaseUserRepository;
 import kz.iitu.edu.activity.monitoring.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -28,6 +33,17 @@ public class ProjectService {
         return ProjectMapper.INSTANCE.entitiesToDto(createdProject, manager, chiefEditor);
     }
 
+    public List<ProjectDto> findAllProjectsOrderedByIdDesc(Pageable pageable) {
+        Page<Project> projectPage = projectRepository.findAllByOrderByIdDesc(pageable);
+
+        List<ProjectDto> projectDtoList = new ArrayList<>();
+        for (Project project : projectPage) {
+            projectDtoList.add(entityToDto(project));
+        }
+
+        return projectDtoList;
+    }
+
     public ProjectDto updateProject(Long id, ProjectUpdateReq updateReq) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project with ID " + id + " does not exist"));
@@ -36,7 +52,7 @@ public class ProjectService {
         return entityToDto(updatedProject);
     }
 
-    private ProjectDto entityToDto(Project project) {
+    public ProjectDto entityToDto(Project project) {
         FirebaseUser manager = userRepository.findById(project.getManagerId()).get();
         FirebaseUser chiefEditor = userRepository.findById(project.getChiefEditorId()).get();
         return ProjectMapper.INSTANCE.entitiesToDto(project, manager, chiefEditor);

@@ -24,7 +24,7 @@ public class Project {
     private String name;
 
     @Column(nullable = false)
-    @Lob
+//    @Lob
     private String description;
 
     @Column(name = "manager_id", nullable = false)
