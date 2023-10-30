@@ -5,11 +5,8 @@ import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.service.ProjectService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,18 +23,18 @@ public class ProjectController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasRole('PRODUCT_MANAGER')")
     public ProjectDto createProject(ProjectCreationReq creationReq, Principal managerPrincipal) {
-        return projectService.createProject(creationReq, managerPrincipal.getName());
+        return projectService.create(creationReq, managerPrincipal.getName());
     }
 
     @GetMapping("/get")
     @PreAuthorize(value = "hasRole('PRODUCT_MANAGER')")
     public List<ProjectDto> getAllProjectsPaged(Pageable page) {
-        return projectService.findAllProjectsOrderedByIdDesc(page);
+        return projectService.getAll(page);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize(value = "hasRole('PRODUCT_MANAGER')")
     public ProjectDto updateProject(@PathVariable Long id, ProjectUpdateReq updateReq) {
-        return projectService.updateProject(id, updateReq);
+        return projectService.update(id, updateReq);
     }
 }

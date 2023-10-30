@@ -16,6 +16,6 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.CREATED)
     public ActivityDto createTicket(@PathVariable("projectId") long projectId,
                                     @RequestBody ActivityCreationReq creationReq) {
-        return activityService.createActivity(projectId, creationReq);
+        return activityService.create(projectId, creationReq);
     }
 }

@@ -6,7 +6,6 @@ import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
 import kz.iitu.edu.activity.monitoring.mapper.ProjectMapper;
-import kz.iitu.edu.activity.monitoring.repository.FirebaseUserRepository;
 import kz.iitu.edu.activity.monitoring.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,20 +19,18 @@ import java.util.List;
 @AllArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
-    private final FirebaseUserRepository userRepository;
+    private final UserService userService;
 
-    public ProjectDto createProject(ProjectCreationReq creationReq, String managerId) {
+    public ProjectDto create(ProjectCreationReq creationReq, String managerId) {
         Project project = ProjectMapper.INSTANCE.creationReqToEntity(creationReq);
-        FirebaseUser manager = userRepository.findById(managerId)
-                .orElseThrow(() -> new RuntimeException("Manager with ID " + managerId + " does not exist"));
-        FirebaseUser chiefEditor = userRepository.findById(project.getChiefEditorId())
-                .orElseThrow(() -> new RuntimeException("Chief editor with ID " + project.getChiefEditorId() + " does not exist"));
+        FirebaseUser manager = userService.getManagerByIdOrThrow(managerId);
+        FirebaseUser chiefEditor = userService.getChiefEditorByIdOrThrow(project.getChiefEditorId());
         project.setManagerId(managerId);
         Project createdProject = projectRepository.save(project);
         return ProjectMapper.INSTANCE.entitiesToDto(createdProject, manager, chiefEditor);
     }
 
-    public List<ProjectDto> findAllProjectsOrderedByIdDesc(Pageable pageable) {
+    public List<ProjectDto> getAll(Pageable pageable) {
         Page<Project> projectPage = projectRepository.findAllByOrderByIdDesc(pageable);
 
         List<ProjectDto> projectDtoList = new ArrayList<>();
@@ -44,17 +41,21 @@ public class ProjectService {
         return projectDtoList;
     }
 
-    public ProjectDto updateProject(Long id, ProjectUpdateReq updateReq) {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project with ID " + id + " does not exist"));
+    public ProjectDto update(Long id, ProjectUpdateReq updateReq) {
+        Project project = getByIdOrThrow(id);
         ProjectMapper.INSTANCE.updateEntityFromUpdateReq(updateReq, project);
         Project updatedProject = projectRepository.save(project);
         return entityToDto(updatedProject);
     }
 
-    public ProjectDto entityToDto(Project project) {
-        FirebaseUser manager = userRepository.findById(project.getManagerId()).get();
-        FirebaseUser chiefEditor = userRepository.findById(project.getChiefEditorId()).get();
+    Project getByIdOrThrow(Long id) {
+        return projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project with ID " + id + " does not exist"));
+    }
+
+    private ProjectDto entityToDto(Project project) {
+        FirebaseUser manager = userService.getManagerByIdOrThrow(project.getManagerId());
+        FirebaseUser chiefEditor = userService.getChiefEditorByIdOrThrow(project.getChiefEditorId());
         return ProjectMapper.INSTANCE.entitiesToDto(project, manager, chiefEditor);
     }
 }
