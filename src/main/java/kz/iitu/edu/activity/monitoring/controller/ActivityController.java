@@ -14,8 +14,7 @@ public class ActivityController {
 
     @PostMapping("/projects/{projectId}/activities")
     @ResponseStatus(HttpStatus.CREATED)
-    public ActivityDto createTicket(@PathVariable("projectId") long projectId,
-                                    @RequestBody ActivityCreationReq creationReq) {
+    public ActivityDto create(@PathVariable("projectId") long projectId, @RequestBody ActivityCreationReq creationReq) {
         return activityService.create(projectId, creationReq);
     }
 }

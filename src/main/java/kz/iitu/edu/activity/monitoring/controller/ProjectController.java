@@ -22,19 +22,19 @@ public class ProjectController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasRole('PRODUCT_MANAGER')")
-    public ProjectDto createProject(ProjectCreationReq creationReq, Principal managerPrincipal) {
+    public ProjectDto create(ProjectCreationReq creationReq, Principal managerPrincipal) {
         return projectService.create(creationReq, managerPrincipal.getName());
     }
 
     @GetMapping("/get")
     @PreAuthorize(value = "hasRole('PRODUCT_MANAGER')")
-    public List<ProjectDto> getAllProjectsPaged(Pageable page) {
+    public List<ProjectDto> getAll(Pageable page) {
         return projectService.getAll(page);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize(value = "hasRole('PRODUCT_MANAGER')")
-    public ProjectDto updateProject(@PathVariable Long id, ProjectUpdateReq updateReq) {
+    public ProjectDto update(@PathVariable Long id, ProjectUpdateReq updateReq) {
         return projectService.update(id, updateReq);
     }
 }
