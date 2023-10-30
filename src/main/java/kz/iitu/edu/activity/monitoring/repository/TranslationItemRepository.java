@@ -2,6 +2,8 @@ package kz.iitu.edu.activity.monitoring.repository;
 
 import kz.iitu.edu.activity.monitoring.entity.TranslationItem;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
 
-public interface TranslationItemRepository extends PagingAndSortingRepository<TranslationItem,Long> {
+@Repository
+public interface TranslationItemRepository extends PagingAndSortingRepository<TranslationItem, Long> {
 }
