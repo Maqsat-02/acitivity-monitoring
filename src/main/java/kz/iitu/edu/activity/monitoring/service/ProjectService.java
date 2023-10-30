@@ -28,7 +28,17 @@ public class ProjectService {
         return ProjectMapper.INSTANCE.entitiesToDto(createdProject, manager, chiefEditor);
     }
 
-    public ProjectDto updateProject(ProjectUpdateReq updateReq) {
-        return null;
+    public ProjectDto updateProject(Long id, ProjectUpdateReq updateReq) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project with ID " + id + " does not exist"));
+        ProjectMapper.INSTANCE.updateEntityFromUpdateReq(updateReq, project);
+        Project updatedProject = projectRepository.save(project);
+        return entityToDto(updatedProject);
+    }
+
+    private ProjectDto entityToDto(Project project) {
+        FirebaseUser manager = userRepository.findById(project.getManagerId()).get();
+        FirebaseUser chiefEditor = userRepository.findById(project.getChiefEditorId()).get();
+        return ProjectMapper.INSTANCE.entitiesToDto(project, manager, chiefEditor);
     }
 }

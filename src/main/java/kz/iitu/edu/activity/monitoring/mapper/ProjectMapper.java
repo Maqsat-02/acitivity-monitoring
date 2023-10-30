@@ -1,11 +1,11 @@
 package kz.iitu.edu.activity.monitoring.mapper;
 
 import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectCreationReq;
+import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -18,4 +18,7 @@ public interface ProjectMapper {
     ProjectDto entitiesToDto(Project project, FirebaseUser manager, FirebaseUser chiefEditor);
 
     Project creationReqToEntity(ProjectCreationReq creationReq);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromUpdateReq(ProjectUpdateReq updateReq, @MappingTarget Project project);
 }

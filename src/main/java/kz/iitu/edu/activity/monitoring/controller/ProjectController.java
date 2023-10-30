@@ -6,10 +6,7 @@ import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.service.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -25,9 +22,9 @@ public class ProjectController {
         return projectService.createProject(creationReq, managerPrincipal.getName());
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @PreAuthorize(value="hasRole('PRODUCT_MANAGER')")
-    public ProjectDto updateProject(ProjectUpdateReq updateReq) {
-        return projectService.updateProject(updateReq);
+    public ProjectDto updateProject(@PathVariable Long id, ProjectUpdateReq updateReq) {
+        return projectService.updateProject(id, updateReq);
     }
 }
