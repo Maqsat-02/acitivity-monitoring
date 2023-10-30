@@ -1,6 +1,6 @@
 package kz.iitu.edu.activity.monitoring.dto.project.response;
 
-import kz.iitu.edu.activity.monitoring.dto.common.UserDto;
+import kz.iitu.edu.activity.monitoring.dto.common.response.UserDto;
 import lombok.Builder;
 import lombok.Data;
 

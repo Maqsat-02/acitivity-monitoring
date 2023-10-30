@@ -5,6 +5,7 @@ import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.service.ProjectService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +13,13 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/projects")
+@PreAuthorize(value="hasRole('PRODUCT_MANAGER')")
 @AllArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value="hasRole('PRODUCT_MANAGER')")
     public ProjectDto createProject(ProjectCreationReq creationReq, Principal managerPrincipal) {
         return projectService.createProject(creationReq, managerPrincipal.getName());

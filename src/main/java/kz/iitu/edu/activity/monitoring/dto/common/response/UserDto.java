@@ -1,4 +1,4 @@
-package kz.iitu.edu.activity.monitoring.dto.common;
+package kz.iitu.edu.activity.monitoring.dto.common.response;
 
 import lombok.Builder;
 import lombok.Data;

@@ -27,7 +27,7 @@ public class Activity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column
     @Lob
     private String html;
 
