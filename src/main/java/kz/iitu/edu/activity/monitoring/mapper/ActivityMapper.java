@@ -28,8 +28,4 @@ public interface ActivityMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromTranslatorUpdateReq(ActivityUpdateByTranslatorReq updateReq, @MappingTarget Activity activity);
-
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromStatusUpdateReq(ActivityStatusUpdateReq updateReq, @MappingTarget Activity activity);
 }

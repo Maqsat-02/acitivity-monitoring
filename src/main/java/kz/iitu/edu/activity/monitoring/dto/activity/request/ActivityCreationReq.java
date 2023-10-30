@@ -6,6 +6,7 @@ import lombok.Data;
 @Builder
 @Data
 public class ActivityCreationReq {
+    private final Long projectId;
     private final String title;
     private final String language;
     private final String targetLanguage;

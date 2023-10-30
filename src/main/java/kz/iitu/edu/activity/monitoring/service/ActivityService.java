@@ -5,13 +5,10 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdate
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
-import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectUpdateReq;
-import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
 import kz.iitu.edu.activity.monitoring.mapper.ActivityMapper;
-import kz.iitu.edu.activity.monitoring.mapper.ProjectMapper;
 import kz.iitu.edu.activity.monitoring.repository.ActivityRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +20,8 @@ public class ActivityService {
     private final ProjectService projectService;
     private final UserService userService;
 
-    public ActivityDto create(Long projectId, ActivityCreationReq creationReq) {
-        Project project = projectService.getByIdOrThrow(projectId);
+    public ActivityDto create(ActivityCreationReq creationReq) {
+        Project project = projectService.getByIdOrThrow(creationReq.getProjectId());
         Activity activity = ActivityMapper.INSTANCE.creationReqToEntity(creationReq);
         FirebaseUser translator = userService.getTranslatorByIdOrThrow(activity.getTranslatorId());
         activity.setProject(project);
@@ -33,25 +30,34 @@ public class ActivityService {
         return ActivityMapper.INSTANCE.entitiesToDto(createdActivity, translator);
     }
 
-    public ActivityDto updateByManagerReq(Long id, ActivityUpdateByManagerReq updateReq) {
+    public ActivityDto updateByManager(Long id, ActivityUpdateByManagerReq updateReq) {
         Activity activity = getByIdOrThrow(id);
         ActivityMapper.INSTANCE.updateEntityFromManagerUpdateReq(updateReq, activity);
         Activity updatedProject = activityRepository.save(activity);
         return entityToDto(updatedProject);
     }
 
-    public ActivityDto updateByTranslatorReq(Long id, ActivityUpdateByTranslatorReq updateReq) {
+    public ActivityDto updateByTranslator(Long id, ActivityUpdateByTranslatorReq updateReq) {
         Activity activity = getByIdOrThrow(id);
         ActivityMapper.INSTANCE.updateEntityFromTranslatorUpdateReq(updateReq, activity);
-        Activity updatedProject = activityRepository.save(activity);
-        return entityToDto(updatedProject);
+        Activity updatedActivity = activityRepository.save(activity);
+        return entityToDto(updatedActivity);
     }
 
-    public ActivityDto updateByStatusReq(Long id, ActivityStatusUpdateReq updateReq) {
+    public ActivityDto updateStatusByManager(Long id, ActivityStatusUpdateReq statusUpdateReq) {
         Activity activity = getByIdOrThrow(id);
-        ActivityMapper.INSTANCE.updateEntityFromStatusUpdateReq(updateReq, activity);
-        Activity updatedProject = activityRepository.save(activity);
-        return entityToDto(updatedProject);
+        // TODO: status validation
+        activity.setStatus(statusUpdateReq.getStatus());
+        Activity updatedActivity = activityRepository.save(activity);
+        return entityToDto(updatedActivity);
+    }
+
+    public ActivityDto updateStatusByTranslator(Long id, ActivityStatusUpdateReq statusUpdateReq) {
+        Activity activity = getByIdOrThrow(id);
+        // TODO: status validation
+        activity.setStatus(statusUpdateReq.getStatus());
+        Activity updatedActivity = activityRepository.save(activity);
+        return entityToDto(updatedActivity);
     }
 
     Activity getByIdOrThrow(Long id) {
@@ -60,7 +66,7 @@ public class ActivityService {
     }
 
     private ActivityDto entityToDto(Activity activity) {
-        FirebaseUser translator = userService.getManagerByIdOrThrow(activity.getTranslatorId());
+        FirebaseUser translator = userService.getTranslatorByIdOrThrow(activity.getTranslatorId());
         return ActivityMapper.INSTANCE.entitiesToDto(activity, translator);
     }
 }
