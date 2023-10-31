@@ -8,6 +8,7 @@ import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
 import kz.iitu.edu.activity.monitoring.entity.*;
 import kz.iitu.edu.activity.monitoring.enums.ActivityStatus;
 import kz.iitu.edu.activity.monitoring.repository.ActivityRepository;
+import kz.iitu.edu.activity.monitoring.repository.TextItemRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ import static org.mockito.Mockito.*;
 class ActivityServiceTest {
     @Mock
     ActivityRepository activityRepository;
+    @Mock
+    TextItemRepository textItemRepository;
     @Mock
     ProjectService projectService;
     @Mock
@@ -57,7 +60,7 @@ class ActivityServiceTest {
         when(activityRepository.save(any())).thenReturn(activity);
 
         // Create an instance of ActivityService and inject the mock dependencies
-        ActivityService activityService = new ActivityService(activityRepository, projectService, userService);
+        ActivityService activityService = new ActivityService(activityRepository, textItemRepository, projectService, userService);
 
         // Call the method you want to test
         ActivityCreationReq creationReq = ActivityCreationReq.builder().build();

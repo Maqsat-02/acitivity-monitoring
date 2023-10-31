@@ -28,9 +28,9 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 public class ActivityService {
     private final ActivityRepository activityRepository;
+    private final TextItemRepository textItemRepository;
     private final ProjectService projectService;
     private final UserService userService;
-    private final TextItemRepository textItemRepository;
 
     public ActivityDto create(ActivityCreationReq creationReq) {
         Project project = projectService.getByIdOrThrow(creationReq.getProjectId());
