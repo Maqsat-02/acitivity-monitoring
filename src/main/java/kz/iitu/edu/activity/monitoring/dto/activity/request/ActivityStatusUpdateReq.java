@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class ActivityStatusUpdateReq {
-    private final ActivityStatus status;
+    private final String status;
 }
