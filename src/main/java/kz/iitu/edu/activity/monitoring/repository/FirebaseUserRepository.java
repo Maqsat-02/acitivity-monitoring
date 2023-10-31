@@ -70,7 +70,7 @@ public class FirebaseUserRepository {
         if (role instanceof ArrayList<?> roles && !roles.isEmpty() && roles.get(0) instanceof String result) {
             return result;
         }
-        return null;
+        throw new IllegalStateException("User document does not have a valid role");
     }
 
     private <T> T get(ApiFuture<T> query) {
