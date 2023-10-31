@@ -20,9 +20,9 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "activity_log_id", referencedColumnName = "id", nullable = false)
-    private ActivityLog activityLog;
+    @ManyToOne
+    @JoinColumn(name = "activity_id", nullable = false)
+    private Activity activity;
 
     @Column(name = "chief_editor_id", nullable = false)
     private String chiefEditorId;
@@ -42,6 +42,9 @@ public class Review {
 
     @OneToMany(mappedBy = "review")
     private List<Remark> remarks;
+
+    @OneToMany(mappedBy = "review")
+    private List<TranslationItem> translationItems;
 
     @PrePersist
     private void setCreatedAtAndUpdatedAt() {

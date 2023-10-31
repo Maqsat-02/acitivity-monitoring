@@ -46,9 +46,6 @@ public class ActivityLog {
     @OneToMany(mappedBy = "activityLog")
     private List<TranslationItem> translationItems;
 
-    @OneToOne(mappedBy = "activityLog")
-    private Review review;
-
     @PrePersist
     private void setCreatedAtAndUpdatedAt() {
         createdAt = LocalDateTime.now();

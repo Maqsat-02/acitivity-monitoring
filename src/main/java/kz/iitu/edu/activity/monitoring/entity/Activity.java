@@ -60,10 +60,13 @@ public class Activity {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "activity")
+    private List<TextItem> textItems;
+
+    @OneToMany(mappedBy = "activity")
     private List<ActivityLog> activityLogs;
 
     @OneToMany(mappedBy = "activity")
-    private List<TextItem> textItems;
+    private List<Review> reviews;
 
     @PrePersist
     private void setCreatedAtAndUpdatedAt() {

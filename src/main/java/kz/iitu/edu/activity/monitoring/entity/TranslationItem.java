@@ -27,6 +27,10 @@ public class TranslationItem {
     @JoinColumn(name = "activity_log_id")
     private ActivityLog activityLog;
 
+    @ManyToOne
+    @JoinColumn(name = "review_id")
+    private Review review;
+
     @Column(name = "change_ordinal")
     private Integer changeOrdinal;
 
