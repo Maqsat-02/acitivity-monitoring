@@ -38,13 +38,9 @@ public class ActivityService {
 
     public List<ActivityDto> getAll(Pageable pageable) {
         Page<Activity> activityPage = activityRepository.findAllByOrderByIdDesc(pageable);
-
-        List<ActivityDto> activityDtoList = new ArrayList<>();
-        for (Activity activity : activityPage) {
-            activityDtoList.add(entityToDto(activity));
-        }
-
-        return activityDtoList;
+        return activityPage.stream()
+                .map(this::entityToDto)
+                .toList();
     }
 
     public ActivityDto getById(Long id) {

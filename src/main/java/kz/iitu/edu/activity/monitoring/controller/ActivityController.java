@@ -22,7 +22,7 @@ import java.util.List;
 public class ActivityController {
     private final ActivityService activityService;
 
-    @GetMapping("/get")
+    @GetMapping
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public List<ActivityDto> getAll(Pageable page) {
         return activityService.getAll(page);
@@ -31,7 +31,7 @@ public class ActivityController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.FOUND)
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public ActivityDto getAll(@PathVariable Long id) {
+    public ActivityDto getById(@PathVariable Long id) {
         return activityService.getById(id);
     }
 
