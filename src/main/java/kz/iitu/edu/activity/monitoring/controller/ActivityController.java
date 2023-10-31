@@ -41,7 +41,8 @@ public class ActivityController {
         return activityService.create(creationReq);
     }
 
-    @PutMapping(value = "/{id}/docx", consumes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})
+    @PutMapping("/{id}/docx")
+//    @PutMapping(value = "/{id}/docx", consumes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public void updateWithDocx(@PathVariable Long id, @RequestParam("docx") MultipartFile docxFile) {
         activityService.updateWithDocx(id, docxFile);

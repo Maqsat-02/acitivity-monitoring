@@ -66,10 +66,10 @@ public class ActivityService {
         List<TextItem> textItems = new HtmlSplitter().getTextItems(html);
 
         int shownOrdinal = 1;
-        for (int ordinal = 1; ordinal <= textItems.size(); ordinal++) {
-            TextItem textItem = textItems.get(ordinal);
+        for (int i = 0; i < textItems.size(); i++) {
+            TextItem textItem = textItems.get(i);
             textItem.setActivity(activity);
-            textItem.setOrdinal(ordinal);
+            textItem.setOrdinal(i + 1);
 
             if (!StringUtils.isBlank(textItem.getText())) {
                 textItem.setShownOrdinal(shownOrdinal);

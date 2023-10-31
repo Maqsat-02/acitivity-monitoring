@@ -23,8 +23,7 @@ public class Project {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
-//    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "manager_id", nullable = false)

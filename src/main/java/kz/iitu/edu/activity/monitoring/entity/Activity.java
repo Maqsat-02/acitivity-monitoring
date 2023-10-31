@@ -27,8 +27,7 @@ public class Activity {
     @Column(nullable = false)
     private String title;
 
-    @Column
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String html;
 
     //enum
@@ -49,8 +48,7 @@ public class Activity {
     @Column(name = "target_title")
     private String targetTitle;
 
-    @Column(name = "target_html")
-    @Lob
+    @Column(name = "target_html", columnDefinition = "TEXT")
     private String targetHtml;
 
     @Column(name = "created_at", nullable = false)
