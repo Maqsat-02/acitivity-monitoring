@@ -5,18 +5,35 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdate
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
+import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.service.ActivityService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/activities")
 @AllArgsConstructor
 public class ActivityController {
     private final ActivityService activityService;
+
+    @GetMapping("/get")
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    public List<ActivityDto> getAll(Pageable page) {
+        return activityService.getAll(page);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.FOUND)
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    public ActivityDto getAll(@PathVariable Long id) {
+        return activityService.getById(id);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

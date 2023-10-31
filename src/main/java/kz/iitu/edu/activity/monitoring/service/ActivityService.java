@@ -5,6 +5,7 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdate
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
+import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
@@ -17,10 +18,13 @@ import kz.iitu.edu.activity.monitoring.util.DocxHtmlConverter;
 import kz.iitu.edu.activity.monitoring.util.HtmlSplitter;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -31,6 +35,21 @@ public class ActivityService {
     private final TextItemRepository textItemRepository;
     private final ProjectService projectService;
     private final UserService userService;
+
+    public List<ActivityDto> getAll(Pageable pageable) {
+        Page<Activity> activityPage = activityRepository.findAllByOrderByIdDesc(pageable);
+
+        List<ActivityDto> activityDtoList = new ArrayList<>();
+        for (Activity activity : activityPage) {
+            activityDtoList.add(entityToDto(activity));
+        }
+
+        return activityDtoList;
+    }
+
+    public ActivityDto getById(Long id) {
+        return entityToDto(getByIdOrThrow(id));
+    }
 
     public ActivityDto create(ActivityCreationReq creationReq) {
         Project project = projectService.getByIdOrThrow(creationReq.getProjectId());
