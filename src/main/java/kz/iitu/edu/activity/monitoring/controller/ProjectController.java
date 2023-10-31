@@ -34,13 +34,13 @@ public class ProjectController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public ProjectDto create(ProjectCreationReq creationReq, Principal managerPrincipal) {
+    public ProjectDto create(@RequestBody ProjectCreationReq creationReq, Principal managerPrincipal) {
         return projectService.create(creationReq, managerPrincipal.getName());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public ProjectDto update(@PathVariable Long id, ProjectUpdateReq updateReq) {
+    public ProjectDto update(@PathVariable Long id, @RequestBody ProjectUpdateReq updateReq) {
         return projectService.update(id, updateReq);
     }
 }
