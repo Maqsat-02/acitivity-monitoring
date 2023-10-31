@@ -29,7 +29,6 @@ public class ActivityController {
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.FOUND)
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public ActivityDto getById(@PathVariable Long id) {
         return activityService.getById(id);

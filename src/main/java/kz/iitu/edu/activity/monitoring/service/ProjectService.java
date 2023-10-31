@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +20,17 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserService userService;
 
+    public List<ProjectDto> getAll(Pageable pageable) {
+        Page<Project> projectPage = projectRepository.findAllByOrderByIdDesc(pageable);
+        return projectPage.stream()
+                .map(this::entityToDto)
+                .toList();
+    }
+
+    public ProjectDto getById(Long id) {
+        return entityToDto(getByIdOrThrow(id));
+    }
+
     public ProjectDto create(ProjectCreationReq creationReq, String managerId) {
         Project project = ProjectMapper.INSTANCE.creationReqToEntity(creationReq);
         FirebaseUser manager = userService.getManagerByIdOrThrow(managerId);
@@ -28,17 +38,6 @@ public class ProjectService {
         project.setManagerId(managerId);
         Project createdProject = projectRepository.save(project);
         return ProjectMapper.INSTANCE.entitiesToDto(createdProject, manager, chiefEditor);
-    }
-
-    public List<ProjectDto> getAll(Pageable pageable) {
-        Page<Project> projectPage = projectRepository.findAllByOrderByIdDesc(pageable);
-
-        List<ProjectDto> projectDtoList = new ArrayList<>();
-        for (Project project : projectPage) {
-            projectDtoList.add(entityToDto(project));
-        }
-
-        return projectDtoList;
     }
 
     public ProjectDto update(Long id, ProjectUpdateReq updateReq) {

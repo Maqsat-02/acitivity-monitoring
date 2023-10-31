@@ -19,17 +19,23 @@ import java.util.List;
 public class ProjectController {
     private final ProjectService projectService;
 
+    @GetMapping
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    public List<ProjectDto> getAll(Pageable page) {
+        return projectService.getAll(page);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    public ProjectDto getById(@PathVariable Long id) {
+        return projectService.getById(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public ProjectDto create(ProjectCreationReq creationReq, Principal managerPrincipal) {
         return projectService.create(creationReq, managerPrincipal.getName());
-    }
-
-    @GetMapping("/get")
-    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public List<ProjectDto> getAll(Pageable page) {
-        return projectService.getAll(page);
     }
 
     @PutMapping("/{id}")
