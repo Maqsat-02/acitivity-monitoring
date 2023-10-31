@@ -37,11 +37,13 @@ public class ActivityController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public ActivityDto create(@RequestBody ActivityCreationReq creationReq) {
         return activityService.create(creationReq);
     }
 
     @PutMapping(value = "/{id}/docx", consumes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public void updateWithDocx(@PathVariable Long id, @RequestParam("docx") MultipartFile docxFile) {
         activityService.updateWithDocx(id, docxFile);
     }
