@@ -1,6 +1,6 @@
 package kz.iitu.edu.activity.monitoring.service;
 
-import kz.iitu.edu.activity.monitoring.constant.ActivityStatus;
+import kz.iitu.edu.activity.monitoring.enums.ActivityStatus;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;

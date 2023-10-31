@@ -24,7 +24,7 @@ public class ActivityController {
     }
 
     @PutMapping("/{id}/updateByManager")
-    @PreAuthorize(value = "hasRole('PRODUCT_MANAGER')")
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public ActivityDto updateByManager(@PathVariable long id, @RequestBody ActivityUpdateByManagerReq updateReq) {
         return activityService.updateByManager(id, updateReq);
     }
@@ -36,7 +36,7 @@ public class ActivityController {
     }
 
     @PutMapping("/{id}/updateByManager/status")
-    @PreAuthorize(value = "hasRole('PRODUCT_MANAGER')")
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public ActivityDto updateStatusByManager(@PathVariable long id, @RequestBody ActivityStatusUpdateReq updateReq) {
         return activityService.updateStatusByManager(id, updateReq);
     }

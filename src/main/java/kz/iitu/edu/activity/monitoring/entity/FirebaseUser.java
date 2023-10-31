@@ -15,8 +15,4 @@ public class FirebaseUser {
     private String role;
     private String firstName;
     private String lastName;
-
-    public static String ROLE_TRANSLATOR = "TRANSLATOR";
-    public static String ROLE_PRODUCT_MANAGER = "PRODUCT_MANAGER";
-    public static String ROLE_CHIEF_EDITOR = "CHIEF_EDITOR";
 }

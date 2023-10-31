@@ -1,4 +1,4 @@
-package kz.iitu.edu.activity.monitoring.constant;
+package kz.iitu.edu.activity.monitoring.enums;
 
 public enum ReviewStatus {
     TO_DO,

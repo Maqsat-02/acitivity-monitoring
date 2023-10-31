@@ -17,8 +17,8 @@ public class AppController {
         return principal.getName();
     }
 
-    @GetMapping( "/product-manager")
-    @PreAuthorize(value="hasRole('PRODUCT_MANAGER')")
+    @GetMapping( "/project-manager")
+    @PreAuthorize(value="hasRole('PROJECT_MANAGER')")
     public String testProductManager(Principal principal) {
         return principal.getName();
     }
