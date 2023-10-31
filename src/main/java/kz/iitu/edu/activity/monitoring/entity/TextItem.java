@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 
@@ -26,6 +27,9 @@ public class TextItem {
     @Column(name = "ordinal", nullable = false)
     private Integer ordinal;
 
+    @Column(name = "shown_ordinal")
+    private Integer shownOrdinal;
+
     @Column(name = "prefix_tags", nullable = false)
     private String prefixTags;
 
@@ -35,7 +39,7 @@ public class TextItem {
     @Column(name = "postfix_tags", nullable = false)
     private String postfixTags;
 
-    @Column(name = "is_blank")
+    @Column(name = "is_blank", nullable = false)
     private Boolean isBlank;
 
     @Column(name = "created_at", nullable = false)
@@ -45,7 +49,8 @@ public class TextItem {
     private TranslationItem translationItem;
 
     @PrePersist
-    private void setCreatedAt() {
+    private void setIsBlankAndCreatedAt() {
+        isBlank = StringUtils.isBlank(text);
         createdAt = LocalDateTime.now();
     }
 }

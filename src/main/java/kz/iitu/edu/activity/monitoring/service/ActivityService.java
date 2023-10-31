@@ -1,6 +1,5 @@
 package kz.iitu.edu.activity.monitoring.service;
 
-import kz.iitu.edu.activity.monitoring.enums.ActivityStatus;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
@@ -9,10 +8,21 @@ import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
+import kz.iitu.edu.activity.monitoring.entity.TextItem;
+import kz.iitu.edu.activity.monitoring.enums.ActivityStatus;
 import kz.iitu.edu.activity.monitoring.mapper.ActivityMapper;
 import kz.iitu.edu.activity.monitoring.repository.ActivityRepository;
+import kz.iitu.edu.activity.monitoring.repository.TextItemRepository;
+import kz.iitu.edu.activity.monitoring.util.DocxHtmlConverter;
+import kz.iitu.edu.activity.monitoring.util.HtmlSplitter;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +30,7 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final ProjectService projectService;
     private final UserService userService;
+    private final TextItemRepository textItemRepository;
 
     public ActivityDto create(ActivityCreationReq creationReq) {
         Project project = projectService.getByIdOrThrow(creationReq.getProjectId());
@@ -29,6 +40,38 @@ public class ActivityService {
         activity.setStatus(ActivityStatus.NEW.name());
         Activity createdActivity = activityRepository.save(activity);
         return ActivityMapper.INSTANCE.entitiesToDto(createdActivity, translator);
+    }
+
+    public void updateWithDocx(Long id, MultipartFile docxFile) {
+        Activity activity = getByIdOrThrow(id);
+
+        String html = docxFileToHtml(docxFile);
+        List<TextItem> textItems = new HtmlSplitter().getTextItems(html);
+
+        int shownOrdinal = 1;
+        for (int ordinal = 1; ordinal <= textItems.size(); ordinal++) {
+            TextItem textItem = textItems.get(ordinal);
+            textItem.setActivity(activity);
+            textItem.setOrdinal(ordinal);
+
+            if (!StringUtils.isBlank(textItem.getText())) {
+                textItem.setShownOrdinal(shownOrdinal);
+                shownOrdinal++;
+            }
+        }
+
+        textItemRepository.saveAll(textItems);
+        activity.setHtml(html);
+        activityRepository.save(activity);
+    }
+
+    private String docxFileToHtml(MultipartFile docxFile) {
+        try (InputStream docxInputStream = docxFile.getInputStream()) {
+            DocxHtmlConverter docxHtmlConverter = new DocxHtmlConverter();
+            return docxHtmlConverter.docxToHtml(docxInputStream);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ActivityDto updateByManager(Long id, ActivityUpdateByManagerReq updateReq) {
