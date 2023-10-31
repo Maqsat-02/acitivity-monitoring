@@ -33,15 +33,15 @@ public class StartupRunner implements CommandLineRunner {
 //        Optional<FirebaseUser> userOptional = userRepository.findById("XH4Powot0ve0fiCfi2B7197wuTD2");
 //        System.out.println(userOptional.get());
 
-        Project project = Project.builder()
-                .id(1L)
-                .name("Name")
-                .description("description")
-                .managerId("3BgCu717aSR5DwCLgXMQIAWCTJM2")
-                .chiefEditorId("XH4Powot0ve0fiCfi2B7197wuTD2")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+//        Project project = Project.builder()
+//                .id(1L)
+//                .name("Name")
+//                .description("description")
+//                .managerId("3BgCu717aSR5DwCLgXMQIAWCTJM2")
+//                .chiefEditorId("XH4Powot0ve0fiCfi2B7197wuTD2")
+//                .createdAt(LocalDateTime.now())
+//                .updatedAt(LocalDateTime.now())
+//                .build();
 //        ProjectCreationReq projectCreationReq1 = ProjectCreationReq
 //                .builder()
 //                .name("Name1")
@@ -63,6 +63,6 @@ public class StartupRunner implements CommandLineRunner {
 //        projectService.createProject(projectCreationReq1, "3BgCu717aSR5DwCLgXMQIAWCTJM2");
 //        projectService.createProject(projectCreationReq2, "3BgCu717aSR5DwCLgXMQIAWCTJM2");
 //        projectService.createProject(projectCreationReq3, "3BgCu717aSR5DwCLgXMQIAWCTJM2");
-        System.out.println(projectService.entityToDto(project));
+//        System.out.println(projectService.entityToDto(project));
     }
 }
