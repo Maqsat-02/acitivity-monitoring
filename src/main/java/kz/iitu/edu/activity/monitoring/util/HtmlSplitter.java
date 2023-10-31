@@ -1,6 +1,8 @@
 package kz.iitu.edu.activity.monitoring.util;
 
+import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
 import kz.iitu.edu.activity.monitoring.entity.TextItem;
+import kz.iitu.edu.activity.monitoring.exception.ApiException;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 import org.jsoup.Jsoup;
@@ -100,7 +102,11 @@ public class HtmlSplitter {
         try {
             sentenceDetectorModel = new SentenceModel(new FileInputStream("src/main/resources/apache-nlp-model/en-sent.bin"));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                    .status(500)
+                    .message(e.getMessage())
+                    .build();
+            throw new ApiException(errorResponseDto);
         }
         SentenceDetectorME sentenceDetector = new SentenceDetectorME(sentenceDetectorModel);
         return Arrays.asList(sentenceDetector.sentDetect(text));

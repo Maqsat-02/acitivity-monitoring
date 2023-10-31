@@ -5,7 +5,9 @@ import com.google.cloud.firestore.AggregateQuerySnapshot;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QuerySnapshot;
+import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
+import kz.iitu.edu.activity.monitoring.exception.ApiException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -77,7 +79,11 @@ public class FirebaseUserRepository {
         try {
             return query.get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                    .status(500)
+                    .message(e.getMessage())
+                    .build();
+            throw new ApiException(errorResponseDto);
         }
     }
 }

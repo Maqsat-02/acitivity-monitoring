@@ -1,10 +1,12 @@
 package kz.iitu.edu.activity.monitoring.service;
 
+import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
 import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
+import kz.iitu.edu.activity.monitoring.exception.ApiException;
 import kz.iitu.edu.activity.monitoring.mapper.ProjectMapper;
 import kz.iitu.edu.activity.monitoring.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
@@ -49,7 +51,13 @@ public class ProjectService {
 
     Project getByIdOrThrow(Long id) {
         return projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project with ID " + id + " does not exist"));
+                .orElseThrow(() -> {
+                    ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                            .status(404)
+                            .message("Project with ID " + id + " does not exist")
+                            .build();
+                    throw new ApiException(errorResponseDto);
+                });
     }
 
     private ProjectDto entityToDto(Project project) {

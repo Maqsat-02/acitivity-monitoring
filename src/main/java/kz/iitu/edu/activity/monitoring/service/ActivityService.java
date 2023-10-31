@@ -5,12 +5,14 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdate
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
+import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
 import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
 import kz.iitu.edu.activity.monitoring.entity.TextItem;
 import kz.iitu.edu.activity.monitoring.enums.ActivityStatus;
+import kz.iitu.edu.activity.monitoring.exception.ApiException;
 import kz.iitu.edu.activity.monitoring.mapper.ActivityMapper;
 import kz.iitu.edu.activity.monitoring.repository.ActivityRepository;
 import kz.iitu.edu.activity.monitoring.repository.TextItemRepository;
@@ -85,7 +87,11 @@ public class ActivityService {
             DocxHtmlConverter docxHtmlConverter = new DocxHtmlConverter();
             return docxHtmlConverter.docxToHtml(docxInputStream);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                    .status(500)
+                    .message(e.getMessage())
+                    .build();
+            throw new ApiException(errorResponseDto);
         }
     }
 
@@ -108,7 +114,11 @@ public class ActivityService {
         // Check if the requested status transition is valid
         ActivityStatus newStatus = ActivityStatus.valueOf(statusUpdateReq.getStatus());
         if (!(newStatus == ActivityStatus.TODO || newStatus == ActivityStatus.NEW)) {
-            throw new RuntimeException("Manager can't update " + activity.getStatus() + " to " + statusUpdateReq.getStatus());
+            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                    .status(403)
+                    .message("Manager can't update " + activity.getStatus() + " to " + statusUpdateReq.getStatus())
+                    .build();
+            throw new ApiException(errorResponseDto);
         }
 
         activity.setStatus(statusUpdateReq.getStatus());
@@ -121,7 +131,11 @@ public class ActivityService {
         ActivityStatus currentStatus = ActivityStatus.valueOf(activity.getStatus());
         ActivityStatus newStatus = ActivityStatus.valueOf(statusUpdateReq.getStatus());
         if (!isValidStatusTransition(currentStatus, newStatus)) {
-            throw new RuntimeException("Invalid status transition requested");
+            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                    .status(500)
+                    .message("Invalid status transition requested")
+                    .build();
+            throw new ApiException(errorResponseDto);
         }
         activity.setStatus(newStatus.name());
         Activity updatedActivity = activityRepository.save(activity);
@@ -130,7 +144,13 @@ public class ActivityService {
 
     Activity getByIdOrThrow(Long id) {
         return activityRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Activity with ID " + id + " does not exist"));
+                .orElseThrow(() -> {
+                    ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                            .status(404)
+                            .message("Activity with ID " + id + " does not exist")
+                            .build();
+                    throw new ApiException(errorResponseDto);
+                });
     }
 
     private boolean isValidStatusTransition(ActivityStatus currentStatus, ActivityStatus newStatus) {

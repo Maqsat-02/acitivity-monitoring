@@ -3,6 +3,8 @@ package kz.iitu.edu.activity.monitoring.service;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
+import kz.iitu.edu.activity.monitoring.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,11 @@ public class UserManagementService {
         try {
             firebaseAuth.setCustomUserClaims(uid, claims);
         } catch (FirebaseAuthException e) {
-            throw new RuntimeException(e);
+            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                    .status(500)
+                    .message(e.getMessage())
+                    .build();
+            throw new ApiException(errorResponseDto);
         }
     }
 }
