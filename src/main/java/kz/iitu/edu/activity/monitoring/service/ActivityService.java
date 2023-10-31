@@ -1,5 +1,6 @@
 package kz.iitu.edu.activity.monitoring.service;
 
+import kz.iitu.edu.activity.monitoring.constant.ActivityStatus;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
@@ -46,23 +47,43 @@ public class ActivityService {
 
     public ActivityDto updateStatusByManager(Long id, ActivityStatusUpdateReq statusUpdateReq) {
         Activity activity = getByIdOrThrow(id);
-        // TODO: status validation
-        activity.setStatus(statusUpdateReq.getStatus());
+        // Check if the requested status transition is valid
+        if (!(statusUpdateReq.getStatus().equals(ActivityStatus.TODO) || activity.getStatus().equals(ActivityStatus.NEW.toString()))) {
+            throw new RuntimeException("Manager can't update " + activity.getStatus() + " to " + statusUpdateReq.getStatus());
+        }
+
+        activity.setStatus(statusUpdateReq.getStatus().name());
         Activity updatedActivity = activityRepository.save(activity);
         return entityToDto(updatedActivity);
     }
 
     public ActivityDto updateStatusByTranslator(Long id, ActivityStatusUpdateReq statusUpdateReq) {
         Activity activity = getByIdOrThrow(id);
-        // TODO: status validation
-        activity.setStatus(statusUpdateReq.getStatus());
-        Activity updatedActivity = activityRepository.save(activity);
-        return entityToDto(updatedActivity);
+        ActivityStatus currentStatus = ActivityStatus.valueOf(activity.getStatus());
+        ActivityStatus newStatus = statusUpdateReq.getStatus();
+        // Check if the requested status transition is valid
+        if (isValidStatusTransition(currentStatus, newStatus)) {
+            activity.setStatus(newStatus.name());
+            Activity updatedActivity = activityRepository.save(activity);
+            return entityToDto(updatedActivity);
+        } else {
+            // Handle invalid status transition
+            throw new RuntimeException("Invalid status transition requested");
+        }
     }
 
     Activity getByIdOrThrow(Long id) {
         return activityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activity with ID " + id + " does not exist"));
+    }
+
+    private boolean isValidStatusTransition(ActivityStatus currentStatus, ActivityStatus newStatus) {
+        return switch (currentStatus) {
+            case TODO -> newStatus.equals(ActivityStatus.IN_PROGRESS);
+            case IN_PROGRESS -> newStatus.equals(ActivityStatus.REVIEW) || newStatus.equals(ActivityStatus.TODO);
+            case IN_PROGRESS_FROM_REVIEW -> newStatus.equals(ActivityStatus.REVIEW);
+            default -> false;
+        };
     }
 
     private ActivityDto entityToDto(Activity activity) {
