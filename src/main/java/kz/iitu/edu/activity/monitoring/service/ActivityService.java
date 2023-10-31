@@ -26,7 +26,7 @@ public class ActivityService {
         Activity activity = ActivityMapper.INSTANCE.creationReqToEntity(creationReq);
         FirebaseUser translator = userService.getTranslatorByIdOrThrow(activity.getTranslatorId());
         activity.setProject(project);
-        activity.setStatus("NEW"); // TODO: change to constant
+        activity.setStatus(ActivityStatus.NEW.name());
         Activity createdActivity = activityRepository.save(activity);
         return ActivityMapper.INSTANCE.entitiesToDto(createdActivity, translator);
     }
