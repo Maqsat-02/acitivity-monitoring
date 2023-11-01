@@ -1,12 +1,10 @@
 package kz.iitu.edu.activity.monitoring.repository;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.AggregateQuerySnapshot;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.*;
 import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
+import kz.iitu.edu.activity.monitoring.enums.Role;
 import kz.iitu.edu.activity.monitoring.exception.ApiException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,6 +35,15 @@ public class FirebaseUserRepository {
                 .map(this::documentToUser)
                 .toList();
         return new PageImpl<>(userList, pageable, getCountOfAllUsers());
+    }
+
+    public List<FirebaseUser> findAllChiefEditors() {
+        ApiFuture<QuerySnapshot> query = db.collection("users")
+                .where(Filter.arrayContains("role", Role.CHIEF_EDITOR.name()))
+                .get();
+        return get(query).getDocuments().stream()
+                .map(this::documentToUser)
+                .toList();
     }
 
     public Optional<FirebaseUser> findById(String id) {

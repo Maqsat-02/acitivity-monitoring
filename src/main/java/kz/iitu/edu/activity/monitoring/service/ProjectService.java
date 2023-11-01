@@ -7,6 +7,8 @@ import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
 import kz.iitu.edu.activity.monitoring.exception.ApiException;
+import kz.iitu.edu.activity.monitoring.exception.ChiefEditorAlreadyAssignedAsMainException;
+import kz.iitu.edu.activity.monitoring.exception.ChiefEditorBusyInProjectException;
 import kz.iitu.edu.activity.monitoring.mapper.ProjectMapper;
 import kz.iitu.edu.activity.monitoring.repository.ProjectRepository;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -37,6 +40,7 @@ public class ProjectService {
         Project project = ProjectMapper.INSTANCE.creationReqToEntity(creationReq);
         FirebaseUser manager = userService.getManagerByIdOrThrow(managerId);
         FirebaseUser chiefEditor = userService.getChiefEditorByIdOrThrow(project.getChiefEditorId());
+        throwIfChiefEditorAssignedAsMainToAnyProject(chiefEditor.getId());
         project.setManagerId(managerId);
         Project createdProject = projectRepository.save(project);
         return ProjectMapper.INSTANCE.entitiesToDto(createdProject, manager, chiefEditor);
@@ -44,6 +48,20 @@ public class ProjectService {
 
     public ProjectDto update(Long id, ProjectUpdateReq updateReq) {
         Project project = getByIdOrThrow(id);
+
+        if (updateReq.getManagerId() != null) {
+            userService.getManagerByIdOrThrow(updateReq.getManagerId());
+        }
+
+        String oldChiefEditorId = project.getChiefEditorId();
+        String newChiefEditorId = updateReq.getChiefEditorId();
+        if (newChiefEditorId != null && !Objects.equals(oldChiefEditorId, newChiefEditorId)) {
+            throwIfChiefEditorBusyInProject(oldChiefEditorId, id);
+
+            userService.getChiefEditorByIdOrThrow(newChiefEditorId);
+            throwIfChiefEditorAssignedAsMainToAnyProject(newChiefEditorId);
+        }
+
         ProjectMapper.INSTANCE.updateEntityFromUpdateReq(updateReq, project);
         Project updatedProject = projectRepository.save(project);
         return entityToDto(updatedProject);
@@ -64,5 +82,17 @@ public class ProjectService {
         FirebaseUser manager = userService.getManagerByIdOrThrow(project.getManagerId());
         FirebaseUser chiefEditor = userService.getChiefEditorByIdOrThrow(project.getChiefEditorId());
         return ProjectMapper.INSTANCE.entitiesToDto(project, manager, chiefEditor);
+    }
+
+    private void throwIfChiefEditorAssignedAsMainToAnyProject(String chiefEditorId) {
+        if (userService.isChiefEditorAssignedAsMainToAnyProject(chiefEditorId)) {
+            throw new ChiefEditorAlreadyAssignedAsMainException(chiefEditorId);
+        }
+    }
+
+    private void throwIfChiefEditorBusyInProject(String chiefEditorId, Long projectId) {
+        if (userService.isChiefEditorBusyInProject(chiefEditorId, projectId)) {
+            throw new ChiefEditorBusyInProjectException(chiefEditorId, projectId);
+        }
     }
 }

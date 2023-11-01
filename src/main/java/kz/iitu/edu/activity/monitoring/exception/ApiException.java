@@ -9,6 +9,10 @@ import lombok.EqualsAndHashCode;
 public class ApiException extends RuntimeException {
     private final ErrorResponseDto errorResponseDto;
 
+    public ApiException(int status, String message) {
+        this.errorResponseDto = new ErrorResponseDto(status, message);
+    }
+
     public ApiException(ErrorResponseDto errorResponseDto) {
         super(errorResponseDto.getMessage());
         this.errorResponseDto = errorResponseDto;
