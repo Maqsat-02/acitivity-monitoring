@@ -8,6 +8,8 @@ import kz.iitu.edu.activity.monitoring.entity.Project;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface ProjectMapper {
     ProjectMapper INSTANCE = Mappers.getMapper(ProjectMapper.class);
@@ -15,7 +17,8 @@ public interface ProjectMapper {
     @Mapping(source = "project.id", target = "id")
     @Mapping(source = "manager", target = "manager")
     @Mapping(source = "chiefEditor", target = "chiefEditor")
-    ProjectDto entitiesToDto(Project project, FirebaseUser manager, FirebaseUser chiefEditor);
+    @Mapping(source = "extraChiefEditors", target = "extraChiefEditors")
+    ProjectDto entitiesToDto(Project project, FirebaseUser manager, FirebaseUser chiefEditor, List<FirebaseUser> extraChiefEditors);
 
     Project creationReqToEntity(ProjectCreationReq creationReq);
 

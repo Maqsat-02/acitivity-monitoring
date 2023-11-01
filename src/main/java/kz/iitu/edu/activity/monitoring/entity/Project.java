@@ -41,6 +41,9 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<Activity> activities;
 
+    @OneToMany(mappedBy = "project")
+    private List<XChiefEditor> extraChiefEditors;
+
     @PrePersist
     private void setCreatedAtAndUpdatedAt() {
         createdAt = LocalDateTime.now();

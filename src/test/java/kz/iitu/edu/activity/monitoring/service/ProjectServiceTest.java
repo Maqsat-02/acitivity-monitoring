@@ -55,7 +55,6 @@ class ProjectServiceTest {
         when(projectRepository.save(any(Project.class))).thenReturn(project);
 
         // Create an instance of ProjectService and inject the mock dependencies
-        ProjectService projectService = new ProjectService(projectRepository, userService);
 
         // Call the method you want to test
         ProjectCreationReq creationReq = ProjectCreationReq.builder().build();
