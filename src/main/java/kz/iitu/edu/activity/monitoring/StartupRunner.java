@@ -4,9 +4,15 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
 import kz.iitu.edu.activity.monitoring.dto.project.request.ProjectCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
+import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
+import kz.iitu.edu.activity.monitoring.entity.Review;
+import kz.iitu.edu.activity.monitoring.enums.ReviewStatus;
+import kz.iitu.edu.activity.monitoring.repository.ActivityRepository;
 import kz.iitu.edu.activity.monitoring.repository.FirebaseUserRepository;
+import kz.iitu.edu.activity.monitoring.repository.ProjectRepository;
+import kz.iitu.edu.activity.monitoring.repository.ReviewRepository;
 import kz.iitu.edu.activity.monitoring.service.ActivityService;
 import kz.iitu.edu.activity.monitoring.service.ProjectService;
 import lombok.AllArgsConstructor;
@@ -30,6 +36,10 @@ public class StartupRunner implements CommandLineRunner {
     private final ActivityService activityService;
     private final FirebaseUserRepository userRepository;
 
+    private final ProjectRepository projectRepository;
+    private final ActivityRepository activityRepository;
+    private final ReviewRepository reviewRepository;
+
     @Override
     public void run(String... args) throws Exception {
         ProjectCreationReq projectCreationReq1 = ProjectCreationReq.builder()
@@ -47,6 +57,23 @@ public class StartupRunner implements CommandLineRunner {
                 .translatorId(TRANSLATOR_ID_ALDIYAR)
                 .build();
         ActivityDto activityDto1 = activityService.create(activityCreationReq1);
+
+        // Test ReviewRepository.countWithStatusTodoOrInProgressByChiefEditorAndProject:
+//        Activity activity1 = activityRepository.findById(activityDto1.getId())
+//                .orElseThrow(() -> new RuntimeException("Activity does not exist"));
+//        Review review = Review.builder()
+//                .activity(activity1)
+//                .chiefEditorId(CHIEF_EDITOR_ID_NURZHAN)
+//                .status(ReviewStatus.TO_DO.name())
+//                .build();
+//        reviewRepository.save(review);
+//
+//        long count = reviewRepository.countWithStatusTodoOrInProgressByChiefEditorAndProject(CHIEF_EDITOR_ID_NURZHAN,
+//                activity1.getProject().getId());
+//        System.out.println("Count: " + count);
+//
+//        Review sameReview = reviewRepository.findById(review.getId()).orElseThrow(() -> new RuntimeException("Review does not exist"));
+//        System.out.println(sameReview.getActivity().getProject());
     }
 
     private void testFirebaseUserRepository() {
