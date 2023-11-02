@@ -39,7 +39,7 @@ public class JpaConfig {
         dataSource.driverClassName("org.postgresql.Driver");
         dataSource.url("jdbc:postgresql://localhost:5432/activity_monitor");
         dataSource.username("postgres");
-        dataSource.password("1234");
+        dataSource.password("pass");
         return dataSource.build();
     }
 

@@ -80,6 +80,10 @@ public class ProjectService {
 
     public ProjectDto addExtraChiefEditorToProject(Long projectId, String chiefEditorId) {
         Project project = getByIdOrThrow(projectId);
+        if (Objects.equals(chiefEditorId, project.getChiefEditorId())) {
+            // TODO: consider adding more specific exception. Or conversely, get rid of too specific exceptions (such as ChiefEditorAlreadyAssignedAsMainException)
+            throw new EntityAlreadyExistsException("Chief editor " + chiefEditorId + " is already assigned as main in this project");
+        }
         Optional<ExtraChiefEditor> alreadyAssignedXChiefEditor = extraChiefEditorRepository.findByChiefEditorIdAndProject(chiefEditorId, project);
         if (alreadyAssignedXChiefEditor.isPresent()) {
             throw new EntityAlreadyExistsException("Extra chief editor " + chiefEditorId + " already exists in project " + projectId);
@@ -95,6 +99,7 @@ public class ProjectService {
 
     public ProjectDto removeExtraChiefEditorFromProject(Long projectId, String chiefEditorId) {
         Project project = getByIdOrThrow(projectId);
+        userService.getChiefEditorByIdOrThrow(chiefEditorId);
         ExtraChiefEditor extraChiefEditor = extraChiefEditorRepository.findByChiefEditorIdAndProject(chiefEditorId, project)
                 .orElseThrow(() -> new EntityNotFoundException("Extra chief editor " + chiefEditorId + " not found in project " + projectId));
         if (userService.isChiefEditorBusyInProject(chiefEditorId, projectId)) {
@@ -124,8 +129,9 @@ public class ProjectService {
     }
 
     private void throwIfChiefEditorAssignedAsMainToAnyProject(String chiefEditorId) {
-        if (userService.isChiefEditorAssignedAsMainToAnyProject(chiefEditorId)) {
-            throw new ChiefEditorAlreadyAssignedAsMainException(chiefEditorId);
+        Optional<Project> projectOptional = projectRepository.findByChiefEditorId(chiefEditorId);
+        if (projectOptional.isPresent()) {
+            throw new ChiefEditorAlreadyAssignedAsMainException(chiefEditorId, projectOptional.get().getId());
         }
     }
 

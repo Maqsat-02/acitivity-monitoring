@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
@@ -15,6 +17,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("select count(p) > 0 from Project p where p.chiefEditorId = :chiefEditorId")
     boolean projectExistsWithChiefEditorId(String chiefEditorId);
+
+    Optional<Project> findByChiefEditorId(String chiefEditorId);
     
     boolean existsByName(String name);
 }

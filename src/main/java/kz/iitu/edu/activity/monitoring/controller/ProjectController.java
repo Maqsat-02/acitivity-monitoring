@@ -7,6 +7,7 @@ import kz.iitu.edu.activity.monitoring.service.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +53,6 @@ public class ProjectController {
 
     @DeleteMapping("/{id}/extraChiefEditors/{chiefEditorId}")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ProjectDto removeExtraChiefEditorFromProject(@PathVariable("id") Long id, @PathVariable("chiefEditorId") String chiefEditorId) {
         return projectService.removeExtraChiefEditorFromProject(id, chiefEditorId);
     }

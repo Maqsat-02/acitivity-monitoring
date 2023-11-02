@@ -29,7 +29,7 @@ public class Project {
     @Column(name = "manager_id", nullable = false)
     private String managerId;
 
-    @Column(name = "chief_editor_id", nullable = false)
+    @Column(name = "chief_editor_id", nullable = false, unique = true)
     private String chiefEditorId;
 
     @Column(name = "created_at")

@@ -31,6 +31,7 @@ public class StartupRunner implements CommandLineRunner {
     private static final String PROJECT_MANAGER_ID_MAKSAT = "AR3yg7gYTMTTm8VBLXIWrSgnssc2";
     private static final String TRANSLATOR_ID_ALDIYAR = "XH4Powot0ve0fiCfi2B7197wuTD2";
     private static final String CHIEF_EDITOR_ID_NURZHAN = "qpGIE2dwjfYSx9CFCfC2PnDnWZQ2";
+    private static final String CHIEF_EDITOR_ID_JAKE = "toOmb6UYBRW9Yq8xF0gP6Jt6vr23";
 
     private final ProjectService projectService;
     private final ActivityService activityService;

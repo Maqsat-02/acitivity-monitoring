@@ -25,7 +25,7 @@ public class UserService {
     public List<UserDto> getChiefEditorsNotAssignedAsMainToAnyProject(Pageable pageable) {
         List<FirebaseUser> chiefEditors = userRepository.findAllChiefEditors();
         return chiefEditors.stream()
-                .filter(chiefEditor -> !isChiefEditorAssignedAsMainToAnyProject(chiefEditor.getId()))
+                .filter(chiefEditor -> !projectRepository.projectExistsWithChiefEditorId(chiefEditor.getId()))
                 .map(UserMapper.INSTANCE::entityToDto)
                 .skip(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -42,10 +42,6 @@ public class UserService {
 
     FirebaseUser getChiefEditorByIdOrThrow(String id) {
         return getByIdOrThrow(id, Role.CHIEF_EDITOR.name());
-    }
-
-    boolean isChiefEditorAssignedAsMainToAnyProject(String chiefEditorId) {
-        return projectRepository.projectExistsWithChiefEditorId(chiefEditorId);
     }
 
     boolean isChiefEditorBusyInProject(String chiefEditorId, Long projectId) {
