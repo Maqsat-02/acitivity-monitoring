@@ -5,14 +5,14 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdate
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
-import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
-import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
 import kz.iitu.edu.activity.monitoring.entity.TextItem;
 import kz.iitu.edu.activity.monitoring.enums.ActivityStatus;
-import kz.iitu.edu.activity.monitoring.exception.ApiException;
+import kz.iitu.edu.activity.monitoring.enums.Role;
+import kz.iitu.edu.activity.monitoring.exception.EntityNotFoundException;
+import kz.iitu.edu.activity.monitoring.exception.InvalidStatusTransitionException;
 import kz.iitu.edu.activity.monitoring.mapper.ActivityMapper;
 import kz.iitu.edu.activity.monitoring.repository.ActivityRepository;
 import kz.iitu.edu.activity.monitoring.repository.TextItemRepository;
@@ -26,9 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -87,11 +85,7 @@ public class ActivityService {
             DocxHtmlConverter docxHtmlConverter = new DocxHtmlConverter();
             return docxHtmlConverter.docxToHtml(docxInputStream);
         } catch (Exception e) {
-            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                    .status(500)
-                    .message(e.getMessage())
-                    .build();
-            throw new ApiException(errorResponseDto);
+            throw new RuntimeException(e);
         }
     }
 
@@ -114,11 +108,8 @@ public class ActivityService {
         // Check if the requested status transition is valid
         ActivityStatus newStatus = ActivityStatus.valueOf(statusUpdateReq.getStatus());
         if (!(newStatus == ActivityStatus.TODO || newStatus == ActivityStatus.NEW)) {
-            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                    .status(403)
-                    .message("Manager can't update " + activity.getStatus() + " to " + statusUpdateReq.getStatus())
-                    .build();
-            throw new ApiException(errorResponseDto);
+            throw new InvalidStatusTransitionException(Role.PROJECT_MANAGER.name(), "Activity",
+                    activity.getStatus(), statusUpdateReq.getStatus());
         }
 
         activity.setStatus(statusUpdateReq.getStatus());
@@ -130,12 +121,8 @@ public class ActivityService {
         Activity activity = getByIdOrThrow(id);
         ActivityStatus currentStatus = ActivityStatus.valueOf(activity.getStatus());
         ActivityStatus newStatus = ActivityStatus.valueOf(statusUpdateReq.getStatus());
-        if (!isValidStatusTransition(currentStatus, newStatus)) {
-            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                    .status(500)
-                    .message("Invalid status transition requested")
-                    .build();
-            throw new ApiException(errorResponseDto);
+        if (!isValidStatusTransitionByTranslator(currentStatus, newStatus)) {
+            throw new InvalidStatusTransitionException(Role.TRANSLATOR.name(), "Activity", currentStatus.name(), newStatus.name());
         }
         activity.setStatus(newStatus.name());
         Activity updatedActivity = activityRepository.save(activity);
@@ -144,16 +131,10 @@ public class ActivityService {
 
     Activity getByIdOrThrow(Long id) {
         return activityRepository.findById(id)
-                .orElseThrow(() -> {
-                    ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                            .status(404)
-                            .message("Activity with ID " + id + " does not exist")
-                            .build();
-                    throw new ApiException(errorResponseDto);
-                });
+                .orElseThrow(() -> new EntityNotFoundException("Activity", id));
     }
 
-    private boolean isValidStatusTransition(ActivityStatus currentStatus, ActivityStatus newStatus) {
+    private boolean isValidStatusTransitionByTranslator(ActivityStatus currentStatus, ActivityStatus newStatus) {
         return switch (currentStatus) {
             case TODO -> newStatus == ActivityStatus.IN_PROGRESS;
             case IN_PROGRESS -> newStatus == ActivityStatus.REVIEW || newStatus == ActivityStatus.TODO;

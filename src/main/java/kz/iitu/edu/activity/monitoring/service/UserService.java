@@ -1,17 +1,16 @@
 package kz.iitu.edu.activity.monitoring.service;
 
-import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
 import kz.iitu.edu.activity.monitoring.dto.common.response.UserDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.enums.Role;
-import kz.iitu.edu.activity.monitoring.exception.ApiException;
+import kz.iitu.edu.activity.monitoring.exception.EntityNotFoundException;
 import kz.iitu.edu.activity.monitoring.mapper.UserMapper;
 import kz.iitu.edu.activity.monitoring.repository.FirebaseUserRepository;
 import kz.iitu.edu.activity.monitoring.repository.ProjectRepository;
 import kz.iitu.edu.activity.monitoring.repository.ReviewRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
@@ -58,18 +57,10 @@ public class UserService {
 
     private FirebaseUser getByIdOrThrow(String id, String role) {
         FirebaseUser user = userRepository.findById(id)
-                .orElseThrow(() -> createApiException(id, role));
+                .orElseThrow(() -> new EntityNotFoundException(role, id));
         if (!Objects.equals(user.getRole(), role)) {
-            throw createApiException(id, role);
+            throw new EntityNotFoundException(role, id);
         }
         return user;
-    }
-
-    private ApiException createApiException(String id, String role) {
-        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                .status(404)
-                .message(role + " with ID " + id + " does not exist")
-                .build();
-        return new ApiException(errorResponseDto);
     }
 }

@@ -1,6 +1,6 @@
 package kz.iitu.edu.activity.monitoring.dto.project.request;
 
-import kz.iitu.edu.activity.monitoring.entity.XChiefEditor;
+import kz.iitu.edu.activity.monitoring.entity.ExtraChiefEditor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,5 +13,5 @@ public class ProjectUpdateReq {
     private final String description;
     private final String managerId;
     private final String chiefEditorId;
-    private final List<XChiefEditor> extraChiefEditors;
+    private final List<ExtraChiefEditor> extraChiefEditors;
 }

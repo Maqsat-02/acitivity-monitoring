@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class XChiefEditor {
+public class ExtraChiefEditor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -2,10 +2,8 @@ package kz.iitu.edu.activity.monitoring.repository;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.enums.Role;
-import kz.iitu.edu.activity.monitoring.exception.ApiException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -86,11 +83,7 @@ public class FirebaseUserRepository {
         try {
             return query.get();
         } catch (InterruptedException | ExecutionException e) {
-            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                    .status(500)
-                    .message(e.getMessage())
-                    .build();
-            throw new ApiException(errorResponseDto);
+            throw new RuntimeException(e);
         }
     }
 }

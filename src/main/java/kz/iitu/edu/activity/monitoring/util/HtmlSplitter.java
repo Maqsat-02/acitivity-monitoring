@@ -102,11 +102,7 @@ public class HtmlSplitter {
         try {
             sentenceDetectorModel = new SentenceModel(new FileInputStream("src/main/resources/apache-nlp-model/en-sent.bin"));
         } catch (IOException e) {
-            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                    .status(500)
-                    .message(e.getMessage())
-                    .build();
-            throw new ApiException(errorResponseDto);
+            throw new RuntimeException(e);
         }
         SentenceDetectorME sentenceDetector = new SentenceDetectorME(sentenceDetectorModel);
         return Arrays.asList(sentenceDetector.sentDetect(text));

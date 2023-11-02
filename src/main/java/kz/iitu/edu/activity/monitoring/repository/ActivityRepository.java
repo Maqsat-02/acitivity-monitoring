@@ -1,7 +1,6 @@
 package kz.iitu.edu.activity.monitoring.repository;
 
 import kz.iitu.edu.activity.monitoring.entity.Activity;
-import kz.iitu.edu.activity.monitoring.entity.Project;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

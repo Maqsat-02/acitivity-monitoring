@@ -42,7 +42,7 @@ public class Project {
     private List<Activity> activities;
 
     @OneToMany(mappedBy = "project")
-    private List<XChiefEditor> extraChiefEditors;
+    private List<ExtraChiefEditor> extraChiefEditors;
 
     @PrePersist
     private void setCreatedAtAndUpdatedAt() {
