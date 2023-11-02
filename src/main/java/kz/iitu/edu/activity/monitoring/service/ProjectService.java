@@ -8,8 +8,8 @@ import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
 import kz.iitu.edu.activity.monitoring.exception.ChiefEditorAlreadyAssignedAsMainException;
 import kz.iitu.edu.activity.monitoring.exception.ChiefEditorBusyInProjectException;
+import kz.iitu.edu.activity.monitoring.exception.EntityAlreadyExistsException;
 import kz.iitu.edu.activity.monitoring.exception.EntityNotFoundException;
-import kz.iitu.edu.activity.monitoring.exception.ExtraChiefEditorNotInProjectException;
 import kz.iitu.edu.activity.monitoring.mapper.ProjectMapper;
 import kz.iitu.edu.activity.monitoring.repository.ExtraChiefEditorRepository;
 import kz.iitu.edu.activity.monitoring.repository.ProjectRepository;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -38,11 +39,15 @@ public class ProjectService {
                 .toList();
     }
 
-    public ProjectDto getById(Long id) {
-        return entityToDto(getByIdOrThrow(id));
+    public ProjectDto getById(Long projectId) {
+        return entityToDto(getByIdOrThrow(projectId));
     }
 
     public ProjectDto create(ProjectCreationReq creationReq, String managerId) {
+        if (projectRepository.existsByName(creationReq.getName())) {
+            throw new EntityAlreadyExistsException("Project with name " + creationReq.getName() + " already exists");
+        }
+
         Project project = ProjectMapper.INSTANCE.creationReqToEntity(creationReq);
         FirebaseUser manager = userService.getManagerByIdOrThrow(managerId);
         FirebaseUser chiefEditor = userService.getChiefEditorByIdOrThrow(project.getChiefEditorId());
@@ -52,8 +57,8 @@ public class ProjectService {
         return ProjectMapper.INSTANCE.entitiesToDto(createdProject, manager, chiefEditor, new ArrayList<>());
     }
 
-    public ProjectDto update(Long id, ProjectUpdateReq updateReq) {
-        Project project = getByIdOrThrow(id);
+    public ProjectDto update(Long projectId, ProjectUpdateReq updateReq) {
+        Project project = getByIdOrThrow(projectId);
 
         if (updateReq.getManagerId() != null) {
             userService.getManagerByIdOrThrow(updateReq.getManagerId());
@@ -62,7 +67,7 @@ public class ProjectService {
         String oldChiefEditorId = project.getChiefEditorId();
         String newChiefEditorId = updateReq.getChiefEditorId();
         if (newChiefEditorId != null && !Objects.equals(oldChiefEditorId, newChiefEditorId)) {
-            throwIfChiefEditorBusyInProject(oldChiefEditorId, id);
+            throwIfChiefEditorBusyInProject(oldChiefEditorId, projectId);
 
             userService.getChiefEditorByIdOrThrow(newChiefEditorId);
             throwIfChiefEditorAssignedAsMainToAnyProject(newChiefEditorId);
@@ -73,23 +78,14 @@ public class ProjectService {
         return entityToDto(updatedProject);
     }
 
-    public ProjectDto removeExtraChiefEditorFromProject(Long projectId, String xChiefEditorId) {
+    public ProjectDto addExtraChiefEditorToProject(Long projectId, String chiefEditorId) {
         Project project = getByIdOrThrow(projectId);
-        if (userService.isChiefEditorBusyInProject(xChiefEditorId, projectId)) {
-            throw new RuntimeException("Chief Editor is busy and can't be removed");
+        Optional<ExtraChiefEditor> alreadyAssignedXChiefEditor = extraChiefEditorRepository.findByChiefEditorIdAndProject(chiefEditorId, project);
+        if (alreadyAssignedXChiefEditor.isPresent()) {
+            throw new EntityAlreadyExistsException("Extra chief editor " + chiefEditorId + " already exists in project " + projectId);
         }
-        ExtraChiefEditor extraChiefEditor = extraChiefEditorRepository.findByChiefEditorIdAndProject(xChiefEditorId, project)
-                .orElseThrow(() -> new ExtraChiefEditorNotInProjectException(xChiefEditorId, project.getId()));
-        extraChiefEditorRepository.delete(extraChiefEditor);
-        Project updatedProject = getByIdOrThrow(projectId);
-        return entityToDto(updatedProject);
-    }
-
-    public ProjectDto addExtraChiefEditor(Long projectId, String xChiefEditorId) {
-        Project project = getByIdOrThrow(projectId);
-        ExtraChiefEditor extraChiefEditor = ExtraChiefEditor
-                .builder()
-                .chiefEditorId(xChiefEditorId)
+        ExtraChiefEditor extraChiefEditor = ExtraChiefEditor.builder()
+                .chiefEditorId(chiefEditorId)
                 .project(project)
                 .build();
         extraChiefEditorRepository.save(extraChiefEditor);
@@ -97,9 +93,21 @@ public class ProjectService {
         return entityToDto(updatedProject);
     }
 
-    Project getByIdOrThrow(Long id) {
-        return projectRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Project", id));
+    public ProjectDto removeExtraChiefEditorFromProject(Long projectId, String chiefEditorId) {
+        Project project = getByIdOrThrow(projectId);
+        ExtraChiefEditor extraChiefEditor = extraChiefEditorRepository.findByChiefEditorIdAndProject(chiefEditorId, project)
+                .orElseThrow(() -> new EntityNotFoundException("Extra chief editor " + chiefEditorId + " not found in project " + projectId));
+        if (userService.isChiefEditorBusyInProject(chiefEditorId, projectId)) {
+            throw new ChiefEditorBusyInProjectException(chiefEditorId, projectId);
+        }
+        extraChiefEditorRepository.delete(extraChiefEditor);
+        Project updatedProject = getByIdOrThrow(projectId);
+        return entityToDto(updatedProject);
+    }
+
+    Project getByIdOrThrow(Long projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project", projectId));
     }
 
     private ProjectDto entityToDto(Project project) {

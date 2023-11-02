@@ -44,17 +44,16 @@ public class ProjectController {
         return projectService.update(id, updateReq);
     }
 
-    @DeleteMapping("/{projectId}/{chiefEditorId}")
+    @PostMapping("/{id}/extraChiefEditors/{chiefEditorId}")
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    public ProjectDto addExtraChiefEditorToProject(@PathVariable Long id, @PathVariable String chiefEditorId) {
+        return projectService.addExtraChiefEditorToProject(id, chiefEditorId);
+    }
+
+    @DeleteMapping("/{id}/extraChiefEditors/{chiefEditorId}")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ProjectDto removeExtraChiefEditorFromProject(@PathVariable("projectId") Long projectId, @PathVariable("chiefEditorId") String chiefEditorId) {
-        return projectService.removeExtraChiefEditorFromProject(projectId, chiefEditorId);
+    public ProjectDto removeExtraChiefEditorFromProject(@PathVariable("id") Long id, @PathVariable("chiefEditorId") String chiefEditorId) {
+        return projectService.removeExtraChiefEditorFromProject(id, chiefEditorId);
     }
-
-    @PostMapping("/{id}")
-    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public ProjectDto addXChiefEditor(@PathVariable Long id, @RequestBody ProjectUpdateReq updateReq) {
-        return projectService.addExtraChiefEditor(id, updateReq.getChiefEditorId());
-    }
-
 }

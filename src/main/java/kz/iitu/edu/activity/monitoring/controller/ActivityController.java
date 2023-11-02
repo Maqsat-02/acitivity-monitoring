@@ -5,7 +5,6 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdate
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
-import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.service.ActivityService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +27,10 @@ public class ActivityController {
         return activityService.getAll(page);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{activityId}")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public ActivityDto getById(@PathVariable Long id) {
-        return activityService.getById(id);
+    public ActivityDto getById(@PathVariable Long activityId) {
+        return activityService.getById(activityId);
     }
 
     @PostMapping
@@ -41,34 +40,33 @@ public class ActivityController {
         return activityService.create(creationReq);
     }
 
-    @PutMapping("/{id}/docx")
-//    @PutMapping(value = "/{id}/docx", consumes = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})
+    @PutMapping("/{activityId}/docx")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public void updateWithDocx(@PathVariable Long id, @RequestParam("docx") MultipartFile docxFile) {
-        activityService.updateWithDocx(id, docxFile);
+    public void updateWithDocx(@PathVariable Long activityId, @RequestParam("docx") MultipartFile docxFile) {
+        activityService.updateWithDocx(activityId, docxFile);
     }
 
-    @PutMapping("/{id}/updateByManager")
+    @PutMapping("/{activityId}/updateByManager")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public ActivityDto updateByManager(@PathVariable Long id, @RequestBody ActivityUpdateByManagerReq updateReq) {
-        return activityService.updateByManager(id, updateReq);
+    public ActivityDto updateByManager(@PathVariable Long activityId, @RequestBody ActivityUpdateByManagerReq updateReq) {
+        return activityService.updateByManager(activityId, updateReq);
     }
 
-    @PutMapping("/{id}/updateByTranslator")
+    @PutMapping("/{activityId}/updateByTranslator")
     @PreAuthorize(value = "hasRole('TRANSLATOR')")
-    public ActivityDto updateByTranlator(@PathVariable Long id, @RequestBody ActivityUpdateByTranslatorReq updateReq) {
-        return activityService.updateByTranslator(id, updateReq);
+    public ActivityDto updateByTranlator(@PathVariable Long activityId, @RequestBody ActivityUpdateByTranslatorReq updateReq) {
+        return activityService.updateByTranslator(activityId, updateReq);
     }
 
-    @PutMapping("/{id}/updateByManager/status")
+    @PutMapping("/{activityId}/updateByManager/status")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public ActivityDto updateStatusByManager(@PathVariable Long id, @RequestBody ActivityStatusUpdateReq updateReq) {
-        return activityService.updateStatusByManager(id, updateReq);
+    public ActivityDto updateStatusByManager(@PathVariable Long activityId, @RequestBody ActivityStatusUpdateReq updateReq) {
+        return activityService.updateStatusByManager(activityId, updateReq);
     }
 
-    @PutMapping("/{id}/updateByTranslator/status")
+    @PutMapping("/{activityId}/updateByTranslator/status")
     @PreAuthorize(value = "hasRole('TRANSLATOR')")
-    public ActivityDto updateStatusByTranslator(@PathVariable Long id, @RequestBody ActivityStatusUpdateReq updateReq) {
-        return activityService.updateStatusByTranslator(id, updateReq);
+    public ActivityDto updateStatusByTranslator(@PathVariable Long activityId, @RequestBody ActivityStatusUpdateReq updateReq) {
+        return activityService.updateStatusByTranslator(activityId, updateReq);
     }
 }

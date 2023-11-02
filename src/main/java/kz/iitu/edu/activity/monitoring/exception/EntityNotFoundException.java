@@ -8,4 +8,8 @@ public class EntityNotFoundException extends NotFoundApiException {
     public EntityNotFoundException(String entityName, String entityId) {
         super(entityName + " " + entityId + " not found");
     }
+
+    public EntityNotFoundException(String message) {
+        super(message);
+    }
 }

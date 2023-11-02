@@ -43,8 +43,8 @@ public class ActivityService {
                 .toList();
     }
 
-    public ActivityDto getById(Long id) {
-        return entityToDto(getByIdOrThrow(id));
+    public ActivityDto getById(Long activityId) {
+        return entityToDto(getByIdOrThrow(activityId));
     }
 
     public ActivityDto create(ActivityCreationReq creationReq) {
@@ -57,8 +57,8 @@ public class ActivityService {
         return ActivityMapper.INSTANCE.entitiesToDto(createdActivity, translator);
     }
 
-    public void updateWithDocx(Long id, MultipartFile docxFile) {
-        Activity activity = getByIdOrThrow(id);
+    public void updateWithDocx(Long activityId, MultipartFile docxFile) {
+        Activity activity = getByIdOrThrow(activityId);
 
         String html = docxFileToHtml(docxFile);
         List<TextItem> textItems = new HtmlSplitter().getTextItems(html);
@@ -89,22 +89,22 @@ public class ActivityService {
         }
     }
 
-    public ActivityDto updateByManager(Long id, ActivityUpdateByManagerReq updateReq) {
-        Activity activity = getByIdOrThrow(id);
+    public ActivityDto updateByManager(Long activityId, ActivityUpdateByManagerReq updateReq) {
+        Activity activity = getByIdOrThrow(activityId);
         ActivityMapper.INSTANCE.updateEntityFromManagerUpdateReq(updateReq, activity);
         Activity updatedProject = activityRepository.save(activity);
         return entityToDto(updatedProject);
     }
 
-    public ActivityDto updateByTranslator(Long id, ActivityUpdateByTranslatorReq updateReq) {
-        Activity activity = getByIdOrThrow(id);
+    public ActivityDto updateByTranslator(Long activityId, ActivityUpdateByTranslatorReq updateReq) {
+        Activity activity = getByIdOrThrow(activityId);
         ActivityMapper.INSTANCE.updateEntityFromTranslatorUpdateReq(updateReq, activity);
         Activity updatedActivity = activityRepository.save(activity);
         return entityToDto(updatedActivity);
     }
 
-    public ActivityDto updateStatusByManager(Long id, ActivityStatusUpdateReq statusUpdateReq) {
-        Activity activity = getByIdOrThrow(id);
+    public ActivityDto updateStatusByManager(Long activityId, ActivityStatusUpdateReq statusUpdateReq) {
+        Activity activity = getByIdOrThrow(activityId);
         // Check if the requested status transition is valid
         ActivityStatus newStatus = ActivityStatus.valueOf(statusUpdateReq.getStatus());
         if (!(newStatus == ActivityStatus.TODO || newStatus == ActivityStatus.NEW)) {
@@ -117,8 +117,8 @@ public class ActivityService {
         return entityToDto(updatedActivity);
     }
 
-    public ActivityDto updateStatusByTranslator(Long id, ActivityStatusUpdateReq statusUpdateReq) {
-        Activity activity = getByIdOrThrow(id);
+    public ActivityDto updateStatusByTranslator(Long activityId, ActivityStatusUpdateReq statusUpdateReq) {
+        Activity activity = getByIdOrThrow(activityId);
         ActivityStatus currentStatus = ActivityStatus.valueOf(activity.getStatus());
         ActivityStatus newStatus = ActivityStatus.valueOf(statusUpdateReq.getStatus());
         if (!isValidStatusTransitionByTranslator(currentStatus, newStatus)) {
@@ -129,9 +129,9 @@ public class ActivityService {
         return entityToDto(updatedActivity);
     }
 
-    Activity getByIdOrThrow(Long id) {
-        return activityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Activity", id));
+    Activity getByIdOrThrow(Long activityId) {
+        return activityRepository.findById(activityId)
+                .orElseThrow(() -> new EntityNotFoundException("Activity", activityId));
     }
 
     private boolean isValidStatusTransitionByTranslator(ActivityStatus currentStatus, ActivityStatus newStatus) {

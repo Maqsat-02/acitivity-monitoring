@@ -19,6 +19,7 @@ public class ExtraChiefEditor {
 
     @Column(name = "chief_editor_id", nullable = false)
     private String chiefEditorId;
+
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;

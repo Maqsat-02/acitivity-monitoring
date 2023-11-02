@@ -15,4 +15,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("select count(p) > 0 from Project p where p.chiefEditorId = :chiefEditorId")
     boolean projectExistsWithChiefEditorId(String chiefEditorId);
+    
+    boolean existsByName(String name);
 }
