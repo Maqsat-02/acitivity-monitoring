@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +58,9 @@ class ProjectServiceTest {
         // Create an instance of ProjectService and inject the mock dependencies
 
         // Call the method you want to test
-        ProjectCreationReq creationReq = ProjectCreationReq.builder().build();
+        ProjectCreationReq creationReq = ProjectCreationReq.builder()
+                .chiefEditorId("2")
+                .build();
         ProjectDto result = projectService.create(creationReq, "1");
 
         // Assert the result
@@ -69,6 +72,13 @@ class ProjectServiceTest {
                         .firstName("firstName")
                         .lastName("lastName")
                         .build())
+                .chiefEditor(UserDto.builder()
+                        .id("2")
+                        .role("role")
+                        .firstName("firstName")
+                        .lastName("lastName")
+                        .build())
+                .extraChiefEditors(new ArrayList<>())
                 .build();
 
         Assertions.assertEquals(expected, result);
@@ -77,8 +87,8 @@ class ProjectServiceTest {
     @Test
     void testGetAll() {
         // Create a list of projects
-        List<Project> projectList = List.of(Project
-                .builder()
+        List<Project> projectList = List.of(Project.builder()
+                .extraChiefEditors(new ArrayList<>())
                 .build()
         );
 
@@ -102,6 +112,7 @@ class ProjectServiceTest {
         // Create a Project object to return when findById is called
         Project project = Project.builder()
                 .id(1L)
+                .extraChiefEditors(new ArrayList<>())
                 .build();
 
         // Define the behavior for projectRepository mock
@@ -110,6 +121,7 @@ class ProjectServiceTest {
 
         ProjectDto expected = ProjectDto.builder()
                 .id(1L)
+                .extraChiefEditors(new ArrayList<>())
                 .build();
         when(projectRepository.save(any())).thenReturn(project);
         // Call the method you want to test
