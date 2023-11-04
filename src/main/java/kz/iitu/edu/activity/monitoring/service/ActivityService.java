@@ -75,6 +75,10 @@ public class ActivityService {
             }
         }
 
+        if (activity.getHtml() != null) { // already updated with DOCX
+            textItemRepository.deleteAllByActivity(activity);
+        }
+
         textItemRepository.saveAll(textItems);
         activity.setHtml(html);
         activityRepository.save(activity);
