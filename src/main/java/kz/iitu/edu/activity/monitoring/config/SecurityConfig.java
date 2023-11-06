@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
     private static final String[] ENDPOINTS_WHITELIST = {
-            "admin/**"
+            "admin/**", "app/status"
     };
     @Value("${spring.security.oauth2.resource.server.jwt.jwk-set-uri}")
     private String JWK_SET_URI;
