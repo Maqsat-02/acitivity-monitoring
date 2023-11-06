@@ -1,6 +1,7 @@
 package kz.iitu.edu.activity.monitoring.config;
 
 import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,15 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 public class JpaConfig {
+    @Value("${db.url}")
+    private String dbUrl;
+
+    @Value("${db.username}")
+    private String dbUsername;
+
+    @Value("${db.password}")
+    private String dbPassword;
+
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
@@ -37,9 +47,9 @@ public class JpaConfig {
     public DataSource dataSource() {
         DataSourceBuilder<?> dataSource = DataSourceBuilder.create();
         dataSource.driverClassName("org.postgresql.Driver");
-        dataSource.url("jdbc:postgresql://localhost:5432/activity_monitor");
-        dataSource.username("postgres");
-        dataSource.password("pass");
+        dataSource.url(dbUrl);
+        dataSource.username(dbUsername);
+        dataSource.password(dbPassword);
         return dataSource.build();
     }
 

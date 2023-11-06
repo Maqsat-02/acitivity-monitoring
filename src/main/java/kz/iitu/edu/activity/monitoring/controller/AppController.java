@@ -10,6 +10,10 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/app")
 public class AppController {
+    @GetMapping("/status")
+    public String getAppStatus() {
+        return "OK";
+    }
 
     @GetMapping( "/translator")
     @PreAuthorize(value="hasRole('TRANSLATOR')")
