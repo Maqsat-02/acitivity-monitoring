@@ -34,18 +34,21 @@ public class FirebaseUserRepository {
         return new PageImpl<>(userList, pageable, getCountOfAllUsers());
     }
 
+    public List<FirebaseUser> findAllProjectManagers() {
+        return findAllWithRole(Role.PROJECT_MANAGER);
+    }
+
     public List<FirebaseUser> findAllTranslators() {
-        ApiFuture<QuerySnapshot> query = db.collection("users")
-                .where(Filter.arrayContains("role", Role.TRANSLATOR.name()))
-                .get();
-        return get(query).getDocuments().stream()
-                .map(this::documentToUser)
-                .toList();
+        return findAllWithRole(Role.TRANSLATOR);
     }
 
     public List<FirebaseUser> findAllChiefEditors() {
+        return findAllWithRole(Role.CHIEF_EDITOR);
+    }
+
+    private List<FirebaseUser> findAllWithRole(Role role) {
         ApiFuture<QuerySnapshot> query = db.collection("users")
-                .where(Filter.arrayContains("role", Role.CHIEF_EDITOR.name()))
+                .where(Filter.arrayContains("role", role.name()))
                 .get();
         return get(query).getDocuments().stream()
                 .map(this::documentToUser)

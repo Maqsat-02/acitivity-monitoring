@@ -22,6 +22,15 @@ public class UserService {
     private final ReviewRepository reviewRepository;
     private final ProjectRepository projectRepository;
 
+    public List<UserDto> getProjectManagers(Pageable pageable) {
+        List<FirebaseUser> projectManagers = userRepository.findAllProjectManagers();
+        return projectManagers.stream()
+                .map(UserMapper.INSTANCE::entityToDto)
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .toList();
+    }
+
     public List<UserDto> getTranslators(Pageable pageable) {
         List<FirebaseUser> translators = userRepository.findAllTranslators();
         return translators.stream()
