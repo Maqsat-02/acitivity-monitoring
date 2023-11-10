@@ -17,6 +17,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/translators")
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    public List<UserDto> getTranslators(Pageable pageable) {
+        return userService.getTranslators(pageable);
+    }
+
     @GetMapping("/chiefEditors/free")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
     public List<UserDto> getChiefEditorsNotAssignedAsMainToAnyProject(Pageable pageable) {

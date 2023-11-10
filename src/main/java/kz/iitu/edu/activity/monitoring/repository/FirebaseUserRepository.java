@@ -34,6 +34,15 @@ public class FirebaseUserRepository {
         return new PageImpl<>(userList, pageable, getCountOfAllUsers());
     }
 
+    public List<FirebaseUser> findAllTranslators() {
+        ApiFuture<QuerySnapshot> query = db.collection("users")
+                .where(Filter.arrayContains("role", Role.TRANSLATOR.name()))
+                .get();
+        return get(query).getDocuments().stream()
+                .map(this::documentToUser)
+                .toList();
+    }
+
     public List<FirebaseUser> findAllChiefEditors() {
         ApiFuture<QuerySnapshot> query = db.collection("users")
                 .where(Filter.arrayContains("role", Role.CHIEF_EDITOR.name()))
