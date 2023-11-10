@@ -33,6 +33,12 @@ public class ActivityController {
         return activityService.getById(activityId);
     }
 
+    @GetMapping("/project/{projectId}")
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    public List<ActivityDto> getActivitiesByProjectId(@PathVariable Long projectId) {
+        return activityService.getActivitiesByProjectId(projectId);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")

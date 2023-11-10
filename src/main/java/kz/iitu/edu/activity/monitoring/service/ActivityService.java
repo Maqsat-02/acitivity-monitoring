@@ -48,6 +48,12 @@ public class ActivityService {
         return entityToDto(getByIdOrThrow(activityId));
     }
 
+    public List<ActivityDto> getActivitiesByProjectId(Long projectId) {
+        Project project = projectService.getByIdOrThrow(projectId);
+        return activityRepository.findActivityByProject(project).stream().map(this::entityToDto).toList();
+
+    }
+
     public ActivityDto create(ActivityCreationReq creationReq) {
         Project project = projectService.getByIdOrThrow(creationReq.getProjectId());
         Activity activity = ActivityMapper.INSTANCE.creationReqToEntity(creationReq);
