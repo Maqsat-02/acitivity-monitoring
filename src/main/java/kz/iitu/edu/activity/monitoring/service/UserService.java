@@ -2,6 +2,7 @@ package kz.iitu.edu.activity.monitoring.service;
 
 import kz.iitu.edu.activity.monitoring.dto.common.response.UserDto;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
+import kz.iitu.edu.activity.monitoring.entity.Project;
 import kz.iitu.edu.activity.monitoring.enums.Role;
 import kz.iitu.edu.activity.monitoring.exception.EntityNotFoundException;
 import kz.iitu.edu.activity.monitoring.mapper.UserMapper;
@@ -44,6 +45,19 @@ public class UserService {
         List<FirebaseUser> chiefEditors = userRepository.findAllChiefEditors();
         return chiefEditors.stream()
                 .filter(chiefEditor -> !projectRepository.projectExistsWithChiefEditorId(chiefEditor.getId()))
+                .map(UserMapper.INSTANCE::entityToDto)
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .toList();
+    }
+
+    public List<UserDto> getChiefEditorsToAssignAsExtraToProject(Long projectId, Pageable pageable) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project", projectId));
+        List<FirebaseUser> chiefEditors = userRepository.findAllChiefEditors();
+        return chiefEditors.stream()
+                .filter(chiefEditor -> projectRepository.findByIdAndChiefEditorId(projectId, chiefEditor.getId()).isEmpty())
+                .filter(chiefEditor -> project.getExtraChiefEditors().stream().noneMatch(xChiefEditor -> Objects.equals(xChiefEditor.getChiefEditorId(), chiefEditor.getId())))
                 .map(UserMapper.INSTANCE::entityToDto)
                 .skip(pageable.getOffset())
                 .limit(pageable.getPageSize())

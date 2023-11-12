@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +32,13 @@ public class UserController {
 
     @GetMapping("/chiefEditors/free")
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public List<UserDto> getChiefEditorsNotAssignedAsMainToAnyProject(Pageable pageable) {
+    public List<UserDto> getFreeChiefEditorsToAssignAsMain(Pageable pageable) {
         return userService.getChiefEditorsNotAssignedAsMainToAnyProject(pageable);
+    }
+
+    @GetMapping("/chiefEditors/toAssignAsExtraToProject/{projectId}")
+    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    public List<UserDto> getChiefEditorsToAssignAsExtra(@PathVariable("projectId") Long projectId, Pageable pageable) {
+        return userService.getChiefEditorsToAssignAsExtraToProject(projectId, pageable);
     }
 }

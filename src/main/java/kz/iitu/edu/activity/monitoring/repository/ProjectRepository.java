@@ -19,6 +19,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     boolean projectExistsWithChiefEditorId(String chiefEditorId);
 
     Optional<Project> findByChiefEditorId(String chiefEditorId);
+
+    Optional<Project> findByIdAndChiefEditorId(Long id, String chiefEditorId);
     
     boolean existsByName(String name);
 }
