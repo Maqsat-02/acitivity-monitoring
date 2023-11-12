@@ -39,6 +39,12 @@ public class ActivityController {
         return activityService.getActivitiesByProjectId(projectId);
     }
 
+    @GetMapping("/translator/{translatorId}")
+    @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'PROJECT_MANAGER')")
+    public List<ActivityDto> getActivitiesByTranslatorId(@PathVariable String translatorId) {
+        return activityService.getActivitiesByTranslatorId(translatorId);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
@@ -60,7 +66,7 @@ public class ActivityController {
 
     @PutMapping("/{activityId}/updateByTranslator")
     @PreAuthorize(value = "hasRole('TRANSLATOR')")
-    public ActivityDto updateByTranlator(@PathVariable Long activityId, @RequestBody ActivityUpdateByTranslatorReq updateReq) {
+    public ActivityDto updateByTranslator(@PathVariable Long activityId, @RequestBody ActivityUpdateByTranslatorReq updateReq) {
         return activityService.updateByTranslator(activityId, updateReq);
     }
 

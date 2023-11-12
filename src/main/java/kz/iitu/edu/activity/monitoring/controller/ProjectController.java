@@ -27,7 +27,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
+    @PreAuthorize(value = "hasAnyRole('PROJECT_MANAGER', 'TRANSLATOR')")
     public ProjectDto getById(@PathVariable Long id) {
         return projectService.getById(id);
     }

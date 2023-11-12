@@ -50,8 +50,11 @@ public class ActivityService {
 
     public List<ActivityDto> getActivitiesByProjectId(Long projectId) {
         Project project = projectService.getByIdOrThrow(projectId);
-        return activityRepository.findActivityByProject(project).stream().map(this::entityToDto).toList();
+        return activityRepository.findAllByProject(project).stream().map(this::entityToDto).toList();
+    }
 
+    public List<ActivityDto> getActivitiesByTranslatorId(String translatorId) {
+        return activityRepository.findAllByTranslatorId(translatorId).stream().map(this::entityToDto).toList();
     }
 
     public ActivityDto create(ActivityCreationReq creationReq) {

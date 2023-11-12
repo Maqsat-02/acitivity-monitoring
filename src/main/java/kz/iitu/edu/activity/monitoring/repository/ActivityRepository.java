@@ -13,5 +13,6 @@ import java.util.List;
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
     Page<Activity> findAllByOrderByIdDesc(@NonNull Pageable pageable);
-    List<Activity> findActivityByProject(Project project);
+    List<Activity> findAllByProject(Project project);
+    List<Activity> findAllByTranslatorId(String translatorId);
 }
