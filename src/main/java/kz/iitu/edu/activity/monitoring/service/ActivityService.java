@@ -121,13 +121,14 @@ public class ActivityService {
     public ActivityDto updateStatusByManager(Long activityId, ActivityStatusUpdateReq statusUpdateReq) {
         Activity activity = getByIdOrThrow(activityId);
         // Check if the requested status transition is valid
+        ActivityStatus currentStatus = ActivityStatus.valueOf(activity.getStatus());
         ActivityStatus newStatus = ActivityStatus.valueOf(statusUpdateReq.getStatus());
-        if (!(newStatus == ActivityStatus.TODO || newStatus == ActivityStatus.NEW)) {
+        if (!isValidStatusTransitionByManager(currentStatus, newStatus)) {
             throw new InvalidStatusTransitionException(Role.PROJECT_MANAGER.name(), "Activity",
                     activity.getStatus(), statusUpdateReq.getStatus());
         }
 
-        activity.setStatus(statusUpdateReq.getStatus());
+        activity.setStatus(newStatus.name());
         Activity updatedActivity = activityRepository.save(activity);
         return entityToDto(updatedActivity);
     }
@@ -154,6 +155,15 @@ public class ActivityService {
             case TODO -> newStatus == ActivityStatus.IN_PROGRESS;
             case IN_PROGRESS -> newStatus == ActivityStatus.REVIEW || newStatus == ActivityStatus.TODO;
             case IN_PROGRESS_FROM_REVIEW -> newStatus == ActivityStatus.REVIEW;
+            default -> false;
+        };
+    }
+
+    private boolean isValidStatusTransitionByManager(ActivityStatus currentStatus, ActivityStatus newStatus) {
+        return switch (currentStatus) {
+            case NEW -> newStatus == ActivityStatus.TODO || newStatus == ActivityStatus.ARCHIVE;
+            case TODO -> newStatus == ActivityStatus.NEW || newStatus == ActivityStatus.ARCHIVE;
+            case IN_PROGRESS -> newStatus == ActivityStatus.ARCHIVE;
             default -> false;
         };
     }

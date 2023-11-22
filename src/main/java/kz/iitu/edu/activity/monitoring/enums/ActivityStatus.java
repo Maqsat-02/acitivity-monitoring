@@ -6,5 +6,6 @@ public enum ActivityStatus {
     IN_PROGRESS,
     IN_PROGRESS_FROM_REVIEW,
     REVIEW,
-    DONE
+    DONE,
+    ARCHIVE
 }
