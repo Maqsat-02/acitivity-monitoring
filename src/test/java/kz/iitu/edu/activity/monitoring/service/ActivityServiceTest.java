@@ -16,9 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -52,7 +49,7 @@ class ActivityServiceTest {
         Activity activity = Activity.builder()
                 .id(1L)
                 .translatorId("1")
-                .status(ActivityStatus.NEW.name())
+                .status(ActivityStatus.TODO.name())
                 .project(Project.builder().build())
                 .build();
 
@@ -69,7 +66,7 @@ class ActivityServiceTest {
         // Assert the result
         ActivityDto expected = ActivityDto.builder()
                 .id(1L)
-                .status(ActivityStatus.NEW.name())
+                .status(ActivityStatus.TODO.name())
                 .build();
         Assertions.assertEquals(expected, result);
     }
@@ -128,7 +125,7 @@ class ActivityServiceTest {
     void testUpdateStatusByManager() {
         Activity activity = Activity.builder()
                 .id(1L)
-                .status(ActivityStatus.NEW.name())
+                .status(ActivityStatus.TODO.name())
                 .project(Project.builder().build())
                 .build();
         when(activityRepository.findById(anyLong())).thenReturn(Optional.ofNullable(activity));
@@ -136,14 +133,14 @@ class ActivityServiceTest {
         when(activityRepository.save(any(Activity.class))).thenReturn(activity);
 
         // Call the method you want to test
-        ActivityStatusUpdateReq updateReq = new ActivityStatusUpdateReq(ActivityStatus.TODO.name());
+        ActivityStatusUpdateReq updateReq = new ActivityStatusUpdateReq(ActivityStatus.ARCHIVE.name());
         ActivityDto result = activityService.updateStatusByManager(1L, updateReq);
 
         // Assert the result
         ActivityDto expected = ActivityDto
                 .builder()
                 .id(1L)
-                .status(ActivityStatus.TODO.name())
+                .status(ActivityStatus.ARCHIVE.name())
                 .build();/* Define the expected ActivityDto based on the update operation */;
         Assertions.assertEquals(expected, result);
     }

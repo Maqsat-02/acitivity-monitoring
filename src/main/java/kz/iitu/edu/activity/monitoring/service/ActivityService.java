@@ -62,7 +62,7 @@ public class ActivityService {
         Activity activity = ActivityMapper.INSTANCE.creationReqToEntity(creationReq);
         FirebaseUser translator = userService.getTranslatorByIdOrThrow(activity.getTranslatorId());
         activity.setProject(project);
-        activity.setStatus(ActivityStatus.NEW.name());
+        activity.setStatus(ActivityStatus.TODO.name());
         Activity createdActivity = activityRepository.save(activity);
         return ActivityMapper.INSTANCE.entitiesToDto(createdActivity, translator);
     }
@@ -150,20 +150,17 @@ public class ActivityService {
                 .orElseThrow(() -> new EntityNotFoundException("Activity", activityId));
     }
 
-    private boolean isValidStatusTransitionByTranslator(ActivityStatus currentStatus, ActivityStatus newStatus) {
+    private boolean isValidStatusTransitionByManager(ActivityStatus currentStatus, ActivityStatus newStatus) {
         return switch (currentStatus) {
-            case TODO -> newStatus == ActivityStatus.IN_PROGRESS;
-            case IN_PROGRESS -> newStatus == ActivityStatus.REVIEW || newStatus == ActivityStatus.TODO;
-            case IN_PROGRESS_FROM_REVIEW -> newStatus == ActivityStatus.REVIEW;
+            case TODO, IN_PROGRESS -> newStatus == ActivityStatus.ARCHIVE;
             default -> false;
         };
     }
 
-    private boolean isValidStatusTransitionByManager(ActivityStatus currentStatus, ActivityStatus newStatus) {
+    private boolean isValidStatusTransitionByTranslator(ActivityStatus currentStatus, ActivityStatus newStatus) {
         return switch (currentStatus) {
-            case NEW -> newStatus == ActivityStatus.TODO || newStatus == ActivityStatus.ARCHIVE;
-            case TODO -> newStatus == ActivityStatus.NEW || newStatus == ActivityStatus.ARCHIVE;
-            case IN_PROGRESS -> newStatus == ActivityStatus.ARCHIVE;
+            case TODO -> newStatus == ActivityStatus.IN_PROGRESS;
+            case IN_PROGRESS, REVISION -> newStatus == ActivityStatus.REVIEW;
             default -> false;
         };
     }
