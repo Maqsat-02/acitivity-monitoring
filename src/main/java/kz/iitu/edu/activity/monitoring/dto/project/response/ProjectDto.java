@@ -4,6 +4,8 @@ import kz.iitu.edu.activity.monitoring.dto.common.response.UserDto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -15,6 +17,7 @@ public class ProjectDto {
     private final UserDto manager;
     private final UserDto chiefEditor;
     private final List<UserDto> extraChiefEditors;
-    private final String createdAt;
-    private final String updatedAt;
+    private final LocalDate targetDate;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 }

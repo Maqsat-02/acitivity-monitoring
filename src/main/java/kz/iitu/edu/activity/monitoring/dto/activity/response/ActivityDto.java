@@ -4,6 +4,8 @@ import kz.iitu.edu.activity.monitoring.dto.common.response.UserDto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Data
 public class ActivityDto {
@@ -16,6 +18,6 @@ public class ActivityDto {
     private final UserDto translator;
     private final String status;
     private final String targetTitle;
-    private final String createdAt;
-    private final String updatedAt;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 }

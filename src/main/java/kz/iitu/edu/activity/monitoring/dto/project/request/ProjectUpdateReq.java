@@ -4,6 +4,7 @@ import kz.iitu.edu.activity.monitoring.entity.ExtraChiefEditor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Builder
@@ -13,5 +14,6 @@ public class ProjectUpdateReq {
     private final String description;
     private final String managerId;
     private final String chiefEditorId;
+    private final LocalDate targetDate;
     private final List<ExtraChiefEditor> extraChiefEditors;
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class Project {
 
     @Column(name = "chief_editor_id", nullable = false, unique = true)
     private String chiefEditorId;
+
+    @Column(name = "target_date", nullable = false)
+    private LocalDate targetDate;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

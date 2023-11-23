@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,7 @@ public class StartupRunner implements CommandLineRunner {
                 .name("Name1")
                 .description("Description1")
                 .chiefEditorId(CHIEF_EDITOR_ID_NURZHAN)
+                .targetDate(LocalDate.now().plusMonths(6))
                 .build();
         ProjectDto projectDto1 = projectService.create(projectCreationReq1, PROJECT_MANAGER_ID_MAKSAT);
 

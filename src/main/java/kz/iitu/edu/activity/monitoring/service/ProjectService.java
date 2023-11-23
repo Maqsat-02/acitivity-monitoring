@@ -6,10 +6,7 @@ import kz.iitu.edu.activity.monitoring.dto.project.response.ProjectDto;
 import kz.iitu.edu.activity.monitoring.entity.ExtraChiefEditor;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
 import kz.iitu.edu.activity.monitoring.entity.Project;
-import kz.iitu.edu.activity.monitoring.exception.ChiefEditorAlreadyAssignedAsMainException;
-import kz.iitu.edu.activity.monitoring.exception.ChiefEditorBusyInProjectException;
-import kz.iitu.edu.activity.monitoring.exception.EntityAlreadyExistsException;
-import kz.iitu.edu.activity.monitoring.exception.EntityNotFoundException;
+import kz.iitu.edu.activity.monitoring.exception.*;
 import kz.iitu.edu.activity.monitoring.mapper.ProjectMapper;
 import kz.iitu.edu.activity.monitoring.repository.ExtraChiefEditorRepository;
 import kz.iitu.edu.activity.monitoring.repository.ProjectRepository;
@@ -19,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +46,12 @@ public class ProjectService {
             throw new EntityAlreadyExistsException("Project with name " + creationReq.getName() + " already exists");
         }
 
+        LocalDate targetDate = creationReq.getTargetDate();
+        LocalDate today = LocalDate.now();
+        if (targetDate.compareTo(today) <= 0) {
+            throw new InvalidTargetDateException(targetDate, today);
+        }
+
         Project project = ProjectMapper.INSTANCE.creationReqToEntity(creationReq);
         FirebaseUser manager = userService.getManagerByIdOrThrow(managerId);
         FirebaseUser chiefEditor = userService.getChiefEditorByIdOrThrow(project.getChiefEditorId());
@@ -62,6 +66,12 @@ public class ProjectService {
 
         if (updateReq.getManagerId() != null) {
             userService.getManagerByIdOrThrow(updateReq.getManagerId());
+        }
+
+        LocalDate targetDate = updateReq.getTargetDate();
+        LocalDate createdAtDate = project.getCreatedAt().toLocalDate();
+        if (targetDate != null && targetDate.compareTo(createdAtDate) <= 0) {
+            throw new InvalidTargetDateException(targetDate, createdAtDate);
         }
 
         String oldChiefEditorId = project.getChiefEditorId();

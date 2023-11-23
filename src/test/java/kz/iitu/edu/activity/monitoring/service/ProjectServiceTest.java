@@ -12,14 +12,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,11 +44,14 @@ class ProjectServiceTest {
         when(userService.getManagerByIdOrThrow(anyString())).thenReturn(new FirebaseUser("1", "email", "role", "firstName", "lastName"));
         when(userService.getChiefEditorByIdOrThrow(anyString())).thenReturn(new FirebaseUser("2", "email", "role", "firstName", "lastName"));
 
+        LocalDateTime now = LocalDateTime.now();
         // Create a Project object to return when save is called
         Project project = Project.builder()
                 .id(1L)
                 .managerId("1")
                 .chiefEditorId("2")
+                .targetDate(now.toLocalDate().plusMonths(6))
+                .createdAt(now)
                 .build();
 
         // Create a mock for ProjectRepository
@@ -60,6 +62,7 @@ class ProjectServiceTest {
         // Call the method you want to test
         ProjectCreationReq creationReq = ProjectCreationReq.builder()
                 .chiefEditorId("2")
+                .targetDate(LocalDate.now().plusMonths(6))
                 .build();
         ProjectDto result = projectService.create(creationReq, "1");
 
@@ -79,6 +82,8 @@ class ProjectServiceTest {
                         .lastName("lastName")
                         .build())
                 .extraChiefEditors(new ArrayList<>())
+                .targetDate(now.toLocalDate().plusMonths(6))
+                .createdAt(now)
                 .build();
 
         Assertions.assertEquals(expected, result);
@@ -109,10 +114,14 @@ class ProjectServiceTest {
     void testUpdate() {
         when(userService.getManagerByIdOrThrow(anyString())).thenReturn(new FirebaseUser("1", "email", "role", "firstName", "lastName"));
         when(userService.getChiefEditorByIdOrThrow(anyString())).thenReturn(new FirebaseUser("2", "email", "role", "firstName", "lastName"));
+
+
+        LocalDateTime now = LocalDateTime.now();
         // Create a Project object to return when findById is called
         Project project = Project.builder()
                 .id(1L)
                 .extraChiefEditors(new ArrayList<>())
+                .createdAt(now)
                 .build();
 
         // Define the behavior for projectRepository mock
@@ -122,6 +131,7 @@ class ProjectServiceTest {
         ProjectDto expected = ProjectDto.builder()
                 .id(1L)
                 .extraChiefEditors(new ArrayList<>())
+                .createdAt(now)
                 .build();
         when(projectRepository.save(any())).thenReturn(project);
         // Call the method you want to test
