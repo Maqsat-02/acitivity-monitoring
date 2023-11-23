@@ -107,6 +107,7 @@ public class ActivityService {
     public ActivityDto updateByManager(Long activityId, ActivityUpdateByManagerReq updateReq) {
         Activity activity = getByIdOrThrow(activityId);
         ActivityMapper.INSTANCE.updateEntityFromManagerUpdateReq(updateReq, activity);
+        activity.setStatus(ActivityStatus.ARCHIVE.name());
         Activity updatedProject = activityRepository.save(activity);
         return entityToDto(updatedProject);
     }
