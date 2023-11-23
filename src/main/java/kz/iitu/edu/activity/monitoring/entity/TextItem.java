@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "text_item")
@@ -30,13 +32,13 @@ public class TextItem {
     @Column(name = "shown_ordinal")
     private Integer shownOrdinal;
 
-    @Column(name = "prefix_tags", nullable = false)
+    @Column(name = "prefix_tags", nullable = false, columnDefinition = "TEXT")
     private String prefixTags;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
 
-    @Column(name = "postfix_tags", nullable = false)
+    @Column(name = "postfix_tags", nullable = false, columnDefinition = "TEXT")
     private String postfixTags;
 
     @Column(name = "is_blank", nullable = false)
@@ -45,8 +47,8 @@ public class TextItem {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "textItem")
-    private TranslationItem translationItem;
+    @OneToMany(mappedBy = "textItem")
+    private List<TranslationItem> translationItems;
 
     @PrePersist
     private void setIsBlankAndCreatedAt() {

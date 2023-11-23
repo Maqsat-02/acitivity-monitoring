@@ -19,8 +19,8 @@ public class TranslationItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "text_item_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "text_item_id", nullable = false)
     private TextItem textItem;
 
     @ManyToOne
@@ -31,10 +31,10 @@ public class TranslationItem {
     @JoinColumn(name = "review_id")
     private Review review;
 
-    @Column(name = "change_ordinal")
+    @Column(name = "change_ordinal", nullable = false)
     private Integer changeOrdinal;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
 
     @Column(name = "created_at", nullable = false)
