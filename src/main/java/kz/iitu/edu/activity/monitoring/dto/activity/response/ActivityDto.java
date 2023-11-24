@@ -19,6 +19,7 @@ public class ActivityDto {
     private final UserDto translator;
     private final String status;
     private final String targetTitle;
+    private final Boolean docxUploaded;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 }
