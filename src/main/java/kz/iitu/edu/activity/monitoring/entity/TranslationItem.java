@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "translation_item")
@@ -23,14 +24,6 @@ public class TranslationItem {
     @JoinColumn(name = "text_item_id", nullable = false)
     private TextItem textItem;
 
-    @ManyToOne
-    @JoinColumn(name = "activity_log_id")
-    private ActivityLog activityLog;
-
-    @ManyToOne
-    @JoinColumn(name = "review_id")
-    private Review review;
-
     @Column(name = "change_ordinal", nullable = false)
     private Integer changeOrdinal;
 
@@ -40,8 +33,8 @@ public class TranslationItem {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "translationItem")
-    private Remark remark;
+    @OneToMany(mappedBy = "translationItem")
+    private List<Remark> remarks;
 
     @PrePersist
     private void setCreatedAt() {

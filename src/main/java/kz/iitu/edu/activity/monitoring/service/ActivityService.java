@@ -31,8 +31,10 @@ import java.util.List;
 public class ActivityService {
     private final ActivityRepository activityRepository;
     private final TextItemRepository textItemRepository;
+
     private final ProjectService projectService;
     private final UserService userService;
+    private final ReviewService reviewService;
 
     public List<ActivityDto> getAll(Pageable pageable) {
         Page<Activity> activityPage = activityRepository.findAllByOrderByIdDesc(pageable);
@@ -72,13 +74,13 @@ public class ActivityService {
 
         String html = docxFileToHtml(docxFile);
         List<TextItem> textItems = new HtmlSplitter().getTextItems(html);
-        int countTextChar = 0;
+        int textCharCount = 0;
         int shownOrdinal = 1;
         for (int i = 0; i < textItems.size(); i++) {
             TextItem textItem = textItems.get(i);
             textItem.setActivity(activity);
             textItem.setOrdinal(i + 1);
-            countTextChar+=textItem.getText().length();
+            textCharCount += textItem.getText().length();
 
             if (!StringUtils.isBlank(textItem.getText())) {
                 textItem.setShownOrdinal(shownOrdinal);
@@ -91,7 +93,7 @@ public class ActivityService {
         }
 
         textItemRepository.saveAll(textItems);
-        activity.setTotalTextCharCount(countTextChar);
+        activity.setTotalTextCharCount(textCharCount);
         activity.setHtml(html);
         activityRepository.save(activity);
     }
@@ -119,7 +121,7 @@ public class ActivityService {
         return entityToDto(updatedActivity);
     }
 
-    ActivityDto updateLogging(Long activityId, ActivityLoggingUpdateReq updateReq){
+    ActivityDto updateLogging(Long activityId, ActivityLoggingUpdateReq updateReq) {
         Activity activity = getByIdOrThrow(activityId);
         ActivityMapper.INSTANCE.updateEntityFromLoggingUpdateReq(updateReq, activity);
         Activity updatedActivity = activityRepository.save(activity);
@@ -150,6 +152,11 @@ public class ActivityService {
         }
         activity.setStatus(newStatus.name());
         Activity updatedActivity = activityRepository.save(activity);
+
+        if (newStatus == ActivityStatus.REVIEW) {
+            reviewService.createReview(activity);
+        }
+
         return entityToDto(updatedActivity);
     }
 

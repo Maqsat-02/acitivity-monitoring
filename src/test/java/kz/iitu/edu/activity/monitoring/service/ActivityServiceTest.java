@@ -29,6 +29,8 @@ class ActivityServiceTest {
     ProjectService projectService;
     @Mock
     UserService userService;
+    @Mock
+    ReviewService reviewService;
     @InjectMocks
     ActivityService activityService;
 
@@ -57,7 +59,7 @@ class ActivityServiceTest {
         when(activityRepository.save(any())).thenReturn(activity);
 
         // Create an instance of ActivityService and inject the mock dependencies
-        ActivityService activityService = new ActivityService(activityRepository, textItemRepository, projectService, userService);
+        ActivityService activityService = new ActivityService(activityRepository, textItemRepository, projectService, userService, reviewService);
 
         // Call the method you want to test
         ActivityCreationReq creationReq = ActivityCreationReq.builder().build();
@@ -67,6 +69,7 @@ class ActivityServiceTest {
         ActivityDto expected = ActivityDto.builder()
                 .id(1L)
                 .status(ActivityStatus.TODO.name())
+                .docxUploaded(false)
                 .build();
         Assertions.assertEquals(expected, result);
     }
@@ -92,6 +95,7 @@ class ActivityServiceTest {
                 .builder()
                 .id(1L)
                 .status(ActivityStatus.IN_PROGRESS.name())
+                .docxUploaded(false)
                 .build();/* Define the expected ActivityDto based on the update operation */;
         Assertions.assertEquals(expected, result);
     }
@@ -117,6 +121,7 @@ class ActivityServiceTest {
                 .id(1L)
                 .targetTitle("aaa")
                 .status(ActivityStatus.IN_PROGRESS.name())
+                .docxUploaded(false)
                 .build();/* Define the expected ActivityDto based on the update operation */;
         Assertions.assertEquals(expected, result);
     }
@@ -141,6 +146,7 @@ class ActivityServiceTest {
                 .builder()
                 .id(1L)
                 .status(ActivityStatus.ARCHIVE.name())
+                .docxUploaded(false)
                 .build();/* Define the expected ActivityDto based on the update operation */;
         Assertions.assertEquals(expected, result);
     }
@@ -165,6 +171,7 @@ class ActivityServiceTest {
                 .builder()
                 .id(1L)
                 .status(ActivityStatus.IN_PROGRESS.name())
+                .docxUploaded(false)
                 .build();/* Define the expected ActivityDto based on the update operation */;
         Assertions.assertEquals(expected, result);
     }

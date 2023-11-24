@@ -7,7 +7,6 @@ import kz.iitu.edu.activity.monitoring.service.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +21,8 @@ public class ProjectController {
 
     @GetMapping
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
-    public List<ProjectDto> getAll(Pageable page) {
-        return projectService.getAll(page);
+    public List<ProjectDto> getAll(Pageable pageable) {
+        return projectService.getAll(pageable);
     }
 
     @GetMapping("/{id}")

@@ -24,17 +24,17 @@ public class Remark {
     @JoinColumn(name = "review_id", nullable = false)
     private Review review;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "translation_item_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "translation_item_id", nullable = false)
     private TranslationItem translationItem;
 
     @Column(nullable = false)
     private String remark;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @PrePersist

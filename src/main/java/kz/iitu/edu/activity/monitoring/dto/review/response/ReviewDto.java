@@ -11,8 +11,11 @@ import java.time.LocalDateTime;
 public class ReviewDto {
     private final Long id;
     private final Long activityId;
+    private final String activityTitle;
     private final String status;
     private final UserDto chiefEditor;
     private final String comment;
+    private final Integer remarkCount;
     private final LocalDateTime createdAt;
+    private final LocalDateTime endAt;
 }

@@ -14,6 +14,8 @@ public interface ReviewMapper {
     ReviewMapper INSTANCE = Mappers.getMapper(ReviewMapper.class);
 
     @Mapping(source = "review.id", target = "id")
+    @Mapping(source = "review.activity.id", target = "activityId")
+    @Mapping(source = "review.activity.title", target = "activityTitle")
     @Mapping(source = "chiefEditor", target = "chiefEditor")
     ReviewDto entitiesToDto(Review review, FirebaseUser chiefEditor);
 }

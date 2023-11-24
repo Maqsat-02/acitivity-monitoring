@@ -36,10 +36,10 @@ public class Project {
     @Column(name = "target_date", nullable = false)
     private LocalDate targetDate;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "project")

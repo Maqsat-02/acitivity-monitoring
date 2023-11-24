@@ -1,6 +1,8 @@
 package kz.iitu.edu.activity.monitoring.repository;
 
+import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.Review;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,5 +15,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "and r.chiefEditorId = :chiefEditorId and r.activity.project.id = :projectId")
     long countWithStatusTodoOrInProgressByChiefEditorAndProject(String chiefEditorId, Long projectId);
 
-    List<Review> findAllByChiefEditorId(String chiefEditorId);
+    List<Review> findAllByChiefEditorId(String chiefEditorId, Pageable pageable);
+
+    List<Review> findAllByActivity(Activity activity, Pageable pageable);
 }

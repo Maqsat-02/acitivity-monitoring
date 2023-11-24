@@ -1,8 +1,8 @@
 package kz.iitu.edu.activity.monitoring.enums;
 
 public enum ReviewStatus {
-    TO_DO,
+    TODO,
     IN_PROGRESS,
-    SUCCESS,
-    RETURNED_TO_TRANSLATOR
+    NEEDS_REVISION,
+    OK
 }

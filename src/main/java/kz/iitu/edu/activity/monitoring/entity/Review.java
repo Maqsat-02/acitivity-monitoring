@@ -34,17 +34,20 @@ public class Review {
     @Column
     private String comment;
 
+    @Column(name = "remark_count", nullable = false)
+    private Integer remarkCount;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "review")
-    private List<Remark> remarks;
+    @Column(name = "end_at")
+    private LocalDateTime endAt;
 
     @OneToMany(mappedBy = "review")
-    private List<TranslationItem> translationItems;
+    private List<Remark> remarks;
 
     @PrePersist
     private void setCreatedAtAndUpdatedAt() {
