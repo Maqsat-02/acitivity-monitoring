@@ -27,6 +27,7 @@ public class ActivityLogService {
     public ActivityLogDto getActivityLogById(Long id) {
         return entityToDto(getByIdOrThrow(id));
     }
+
     public List<ActivityLogDto> getActivityLogsByActivityId(Long activityId){
         Activity activity = activityService.getByIdOrThrow(activityId);
         return activity.getActivityLogs().stream().map(this::entityToDto).toList();

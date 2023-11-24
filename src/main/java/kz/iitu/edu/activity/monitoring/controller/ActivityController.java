@@ -107,7 +107,7 @@ public class ActivityController {
         return activityLogService.getActivityLogById(activityLogId);
     }
 
-    @GetMapping("{activityId}/log")
+    @GetMapping("/{activityId}/log")
     @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR','PROJECT_MANAGER')")
     public List<ActivityLogDto> getActivityLogByActivityId(@PathVariable Long activityId) {
         return activityLogService.getActivityLogsByActivityId(activityId);

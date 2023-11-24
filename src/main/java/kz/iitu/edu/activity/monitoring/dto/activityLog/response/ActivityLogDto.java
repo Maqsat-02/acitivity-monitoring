@@ -9,11 +9,8 @@ import java.time.LocalDateTime;
 @Data
 public class ActivityLogDto {
     private final Long id;
-
     private final Integer hoursCompleted;
-
     private final Integer hoursRemaining;
-
     private final Integer percentageCompleted;
     private final LocalDateTime createdAt;
 }
