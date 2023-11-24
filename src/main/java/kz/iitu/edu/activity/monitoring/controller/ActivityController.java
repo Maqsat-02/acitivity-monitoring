@@ -5,9 +5,9 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdate
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
-import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogCreationReq;
+import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogDailyCreationReq;
+import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogWeeklyCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.response.ActivityLogDto;
-import kz.iitu.edu.activity.monitoring.entity.ActivityLog;
 import kz.iitu.edu.activity.monitoring.service.ActivityLogService;
 import kz.iitu.edu.activity.monitoring.service.ActivityService;
 import lombok.AllArgsConstructor;
@@ -87,11 +87,18 @@ public class ActivityController {
         return activityService.updateStatusByTranslator(activityId, updateReq);
     }
 
-    @PostMapping("/log")
+    @PostMapping("/log/daily")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR')")
-    public ActivityLogDto create(@RequestBody ActivityLogCreationReq creationReq) {
-        return activityLogService.create(creationReq);
+    public ActivityLogDto createDailyLog(@RequestBody ActivityLogDailyCreationReq creationReq) {
+        return activityLogService.createDailyLog(creationReq);
+    }
+
+    @PostMapping("/log/weekly")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR')")
+    public ActivityLogDto createWeeklyLog(@RequestBody ActivityLogWeeklyCreationReq creationReq) {
+        return activityLogService.createWeeklyLog(creationReq);
     }
 
     @GetMapping("/log/{activityLogId}")

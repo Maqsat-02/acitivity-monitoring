@@ -7,8 +7,7 @@ import lombok.Data;
 @Builder
 @Data
 @AllArgsConstructor
-public class ActivityLogCreationReq {
-    private final Integer hoursCompleted;
+public class ActivityLogWeeklyCreationReq {
     private final Integer hoursRemaining;
     private final Long activityId;
 }

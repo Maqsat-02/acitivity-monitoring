@@ -1,7 +1,8 @@
 package kz.iitu.edu.activity.monitoring.service;
 
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityLoggingUpdateReq;
-import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogCreationReq;
+import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogDailyCreationReq;
+import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogWeeklyCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.response.ActivityLogDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.ActivityLog;
@@ -26,9 +27,9 @@ public class ActivityLogService {
         return entityToDto(getByIdOrThrow(id));
     }
 
-    public ActivityLogDto create(ActivityLogCreationReq activityLogCreationReq) {
-        Activity activity = activityService.getByIdOrThrow(activityLogCreationReq.getActivityId());
-        ActivityLog activityLog = ActivityLogMapper.INSTANCE.creationReqToEntity(activityLogCreationReq);
+    public ActivityLogDto createDailyLog(ActivityLogDailyCreationReq activityLogDailyCreationReq) {
+        Activity activity = activityService.getByIdOrThrow(activityLogDailyCreationReq.getActivityId());
+        ActivityLog activityLog = ActivityLogMapper.INSTANCE.dailyCreationReqToEntity(activityLogDailyCreationReq);
         activityLog.setActivity(activity);
         List<TextItem> translationItems = textItemRepository
                 .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityLog.getActivity().getId());
@@ -39,11 +40,26 @@ public class ActivityLogService {
         int percentageCompleted = calculatePercentageCompleted(totalTranslationTextCount, activity.getTotalTextCharCount());
         ActivityLoggingUpdateReq loggingUpdateReq = ActivityLoggingUpdateReq.builder()
                 .hoursCompleted(calculateHoursCompleted(activityLog))
-                .hoursRemaining(calculateHoursRemaining(activityLog))
                 .percentageCompleted(percentageCompleted)
                 .build();
 
         activityLog.setPercentageCompleted(percentageCompleted);
+        ActivityLog createdActivityLog = activityLogRepository.save(activityLog);
+
+        activityService.updateLogging(activityLog.getActivity().getId(), loggingUpdateReq);
+
+        return entityToDto(createdActivityLog);
+    }
+
+    public ActivityLogDto createWeeklyLog(ActivityLogWeeklyCreationReq activityLogWeeklyCreationReq) {
+        Activity activity = activityService.getByIdOrThrow(activityLogWeeklyCreationReq.getActivityId());
+        ActivityLog activityLog = ActivityLogMapper.INSTANCE.weeklyCreationReqToEntity(activityLogWeeklyCreationReq);
+        activityLog.setActivity(activity);
+
+        ActivityLoggingUpdateReq loggingUpdateReq = ActivityLoggingUpdateReq.builder()
+                .hoursRemaining(calculateHoursRemaining(activityLog))
+                .build();
+
         ActivityLog createdActivityLog = activityLogRepository.save(activityLog);
 
         activityService.updateLogging(activityLog.getActivity().getId(), loggingUpdateReq);
