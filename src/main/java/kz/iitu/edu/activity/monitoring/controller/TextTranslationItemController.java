@@ -21,7 +21,7 @@ public class TextTranslationItemController {
     private final TextTranslationItemService service;
 
     @GetMapping("/activity/{activityId}")
-    @PreAuthorize(value = "hasRole('TRANSLATOR')")
+    @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR','PROJECT_MANAGER')")
     public List<TextTranslationItemDto> getAll(@PathVariable("activityId") Long activityId) {
         return service.getAll(activityId);
     }
@@ -35,7 +35,7 @@ public class TextTranslationItemController {
     }
 
     @GetMapping("/{textItemId}/translationItems")
-    @PreAuthorize(value = "hasRole('TRANSLATOR')")
+    @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR','PROJECT_MANAGER')")
     public List<TranslationItemDto> getTranslationItemHistory(@PathVariable("textItemId") Long textItemId) {
         return service.getTranslationItemHistory(textItemId);
     }
