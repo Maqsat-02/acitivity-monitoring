@@ -12,4 +12,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("select count(r) from Review r where r.status in ('TO_DO', 'IN_PROGRESS') " +
             "and r.chiefEditorId = :chiefEditorId and r.activity.project.id = :projectId")
     long countWithStatusTodoOrInProgressByChiefEditorAndProject(String chiefEditorId, Long projectId);
+
+    List<Review> findAllByChiefEditorId(String chiefEditorId);
 }
