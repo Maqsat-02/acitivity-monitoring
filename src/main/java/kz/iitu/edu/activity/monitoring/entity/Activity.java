@@ -63,6 +63,9 @@ public class Activity {
     @Column(name = "total_text_char_count")
     private Integer totalTextCharCount;
 
+    @Column(name = "is_logged_today")
+    private Boolean isLoggedToday;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -72,7 +75,7 @@ public class Activity {
     @OneToMany(mappedBy = "activity")
     private List<TextItem> textItems;
 
-    @OneToMany(mappedBy = "activity")
+    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER)
     private List<ActivityLog> activityLogs;
 
     @OneToMany(mappedBy = "activity")

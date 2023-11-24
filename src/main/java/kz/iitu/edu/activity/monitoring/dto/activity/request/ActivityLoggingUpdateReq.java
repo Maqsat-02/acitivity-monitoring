@@ -11,4 +11,5 @@ public class ActivityLoggingUpdateReq {
     private final Integer hoursCompleted;
     private final Integer hoursRemaining;
     private final Integer percentageCompleted;
+    private final Boolean isLoggedToday;
 }

@@ -55,7 +55,9 @@ public class ActivityService {
     public List<ActivityDto> getActivitiesByTranslatorId(String translatorId) {
         return activityRepository.findAllByTranslatorId(translatorId).stream().map(this::entityToDto).toList();
     }
-
+    public List<Activity> getActivitiesIsLoggedTodayTrue() {
+        return activityRepository.findActivitiesByIsLoggedTodayTrueOrderByActivityLogsCreatedAt();
+    }
     public ActivityDto create(ActivityCreationReq creationReq) {
         Project project = projectService.getByIdOrThrow(creationReq.getProjectId());
         Activity activity = ActivityMapper.INSTANCE.creationReqToEntity(creationReq);

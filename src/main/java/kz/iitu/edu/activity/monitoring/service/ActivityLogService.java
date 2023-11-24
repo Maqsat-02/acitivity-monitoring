@@ -1,5 +1,6 @@
 package kz.iitu.edu.activity.monitoring.service;
 
+import jakarta.transaction.Transactional;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityLoggingUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogDailyCreationReq;
@@ -13,9 +14,13 @@ import kz.iitu.edu.activity.monitoring.mapper.ActivityLogMapper;
 import kz.iitu.edu.activity.monitoring.repository.ActivityLogRepository;
 import kz.iitu.edu.activity.monitoring.repository.TextItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,7 @@ public class ActivityLogService {
 
     public ActivityLogDto createDailyLog(Long activityId, ActivityLogDailyCreationReq activityLogDailyCreationReq) {
         Activity activity = activityService.getByIdOrThrow(activityId);
+        activity.setIsLoggedToday(true);
         ActivityLog activityLog = ActivityLogMapper.INSTANCE.dailyCreationReqToEntity(activityLogDailyCreationReq);
         activityLog.setActivity(activity);
         List<TextItem> textItems = textItemRepository
@@ -38,6 +44,7 @@ public class ActivityLogService {
         ActivityLoggingUpdateReq loggingUpdateReq = ActivityLoggingUpdateReq.builder()
                 .hoursCompleted(calculateHoursCompleted(activityLog))
                 .percentageCompleted(percentageCompleted)
+                .isLoggedToday(activity.getIsLoggedToday())
                 .build();
 
         activityLog.setPercentageCompleted(percentageCompleted);
@@ -50,6 +57,7 @@ public class ActivityLogService {
 
     public ActivityLogDto createWeeklyLog(Long activityId, ActivityLogWeeklyCreationReq activityLogWeeklyCreationReq) {
         Activity activity = activityService.getByIdOrThrow(activityId);
+        activity.setIsLoggedToday(true);
         ActivityLog activityLog = ActivityLogMapper.INSTANCE.weeklyCreationReqToEntity(activityLogWeeklyCreationReq);
         activityLog.setActivity(activity);
 
@@ -64,6 +72,7 @@ public class ActivityLogService {
                 .hoursCompleted(calculateHoursCompleted(activityLog))
                 .percentageCompleted(percentageCompleted)
                 .hoursRemaining(calculateHoursRemaining(activityLog))
+                .isLoggedToday(activity.getIsLoggedToday())
                 .build();
 
         activityLog.setPercentageCompleted(percentageCompleted);
@@ -74,9 +83,24 @@ public class ActivityLogService {
         return entityToDto(createdActivityLog);
     }
 
-    public List<ActivityLogDto> getActivityLogsByActivityId(Long activityId){
+    public List<ActivityLogDto> getActivityLogsByActivityId(Long activityId) {
         Activity activity = activityService.getByIdOrThrow(activityId);
         return activity.getActivityLogs().stream().map(this::entityToDto).toList();
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void scheduledCheckingActivityLog() {
+        List<Activity> activities = activityService.getActivitiesIsLoggedTodayTrue();
+        activities = activities.stream().
+                filter(activity -> hasDayChanged(getLastLogCreatedAt(activity)))
+                .collect(Collectors.toList());
+
+        for (Activity activity : activities) {
+            ActivityLoggingUpdateReq loggingUpdateReq = ActivityLoggingUpdateReq.builder()
+                    .isLoggedToday(false)
+                    .build();
+            activityService.updateLogging(activity.getId(), loggingUpdateReq);
+        }
     }
 
     private int calculatePercentageCompleted(int totalTranslationTextCount, int totalTextCharCount) {
@@ -101,6 +125,32 @@ public class ActivityLogService {
             hoursCompleted += activityLog.getActivity().getHoursCompleted();
         }
         return hoursCompleted;
+    }
+
+    public boolean hasDayChanged(LocalDateTime dateTimeToCheck) {
+        if (dateTimeToCheck == null) {
+            // Handle the case where the last log creation date is null
+            System.out.println("Last log creation date is null.");
+            return false;  // Or choose an appropriate behavior
+        }
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        if (dateTimeToCheck.isEqual(currentDateTime)) {
+            System.out.println("The specific date is today.");
+            return false;
+        } else {
+            System.out.println("The specific date is before today's date.");
+            return true;
+        }
+    }
+
+    //    @Transactional
+    public LocalDateTime getLastLogCreatedAt(Activity activity) {
+        List<ActivityLog> activityLogs = activity.getActivityLogs();
+        if (activityLogs != null) {
+            return activityLogs.get(activityLogs.size() - 1).getCreatedAt();
+        }
+        return null;
     }
 
     private ActivityLogDto entityToDto(ActivityLog activityLog) {

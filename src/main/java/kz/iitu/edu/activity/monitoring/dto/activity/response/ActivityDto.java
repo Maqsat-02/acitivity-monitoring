@@ -22,6 +22,7 @@ public class ActivityDto {
     private final Integer hoursRemaining;
     private final Integer percentageCompleted;
     private final Boolean docxUploaded;
+    private final Boolean isLoggedToday;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 }

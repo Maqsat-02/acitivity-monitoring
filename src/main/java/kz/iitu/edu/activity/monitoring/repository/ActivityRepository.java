@@ -15,4 +15,5 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     Page<Activity> findAllByOrderByIdDesc(@NonNull Pageable pageable);
     List<Activity> findAllByProject(Project project);
     List<Activity> findAllByTranslatorId(String translatorId);
+    List<Activity> findActivitiesByIsLoggedTodayTrueOrderByActivityLogsCreatedAt();
 }
