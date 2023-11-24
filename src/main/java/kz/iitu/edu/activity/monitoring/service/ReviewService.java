@@ -38,6 +38,12 @@ public class ReviewService {
                 .toList();
     }
 
+    public ReviewDto getReviewById(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review", reviewId));
+        return entityToDto(review);
+    }
+
     ReviewDto createReview(Activity activity) {
         if (ActivityStatus.valueOf(activity.getStatus()) != ActivityStatus.REVIEW) {
             throw new IllegalArgumentException("Activity must have " + ActivityStatus.REVIEW.name() + " status");

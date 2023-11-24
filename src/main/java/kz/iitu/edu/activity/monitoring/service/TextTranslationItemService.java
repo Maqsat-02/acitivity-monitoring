@@ -36,8 +36,7 @@ public class TextTranslationItemService {
     }
 
     public TranslationItemDto create(Long textItemId, TranslationItemCreationReq creationReq) {
-        TextItem textItem = textItemRepository.findByIdWithLatestTranslationItem(textItemId)
-                .orElseThrow(() -> new EntityNotFoundException("TextItem ", textItemId));
+        TextItem textItem = getByIdWithLatestTranslationItemOrThrow(textItemId);
 
         Optional<TranslationItem> latestTranslationItem = getLatestTranslationItem(textItem);
         int latestChangeOrdinal = latestTranslationItem.isPresent() ? latestTranslationItem.get().getChangeOrdinal() : 0;
@@ -58,7 +57,12 @@ public class TextTranslationItemService {
                 .collect(Collectors.toList());
     }
 
-    private Optional<TranslationItem> getLatestTranslationItem(TextItem textItem) {
+    TextItem getByIdWithLatestTranslationItemOrThrow(Long textItemId) {
+        return textItemRepository.findByIdWithLatestTranslationItem(textItemId)
+                .orElseThrow(() -> new EntityNotFoundException("TextItem ", textItemId));
+    }
+
+    Optional<TranslationItem> getLatestTranslationItem(TextItem textItem) {
         TranslationItem translationItem = textItem.getTranslationItems().isEmpty() ?
                 null : textItem.getTranslationItems().get(0);
         return Optional.ofNullable(translationItem);
