@@ -60,6 +60,8 @@ public class ActivityService {
         FirebaseUser translator = userService.getTranslatorByIdOrThrow(activity.getTranslatorId());
         activity.setProject(project);
         activity.setStatus(ActivityStatus.TODO.name());
+        activity.setHoursCompleted(0);
+        activity.setPercentageCompleted(0);
         Activity createdActivity = activityRepository.save(activity);
         return ActivityMapper.INSTANCE.entitiesToDto(createdActivity, translator);
     }

@@ -15,7 +15,7 @@ public interface TextTranslationItemMapper {
     @Mapping(source = "textItem.id", target = "id")
     @Mapping(source = "textItem.shownOrdinal", target = "ordinal")
     @Mapping(source = "textItem.text", target = "text")
-    @Mapping(source = "translationItem.text", target = "translationText", defaultValue = "")
+    @Mapping(source = "translationItem.text", target = "translationText")
     TextTranslationItemDto entitiesToDto(TextItem textItem, TranslationItem translationItem);
 
     @Mapping(source = "translationItem.changeOrdinal", target = "historyOrdinal")
