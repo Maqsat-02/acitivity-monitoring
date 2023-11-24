@@ -1,6 +1,7 @@
 package kz.iitu.edu.activity.monitoring.service;
 
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityLoggingUpdateReq;
+import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogDailyCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogWeeklyCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.response.ActivityLogDto;
@@ -26,15 +27,19 @@ public class ActivityLogService {
     public ActivityLogDto getActivityLogById(Long id) {
         return entityToDto(getByIdOrThrow(id));
     }
+    public List<ActivityLogDto> getActivityLogsByActivityId(Long activityId){
+        Activity activity = activityService.getByIdOrThrow(activityId);
+        return activity.getActivityLogs().stream().map(this::entityToDto).toList();
+    }
 
     public ActivityLogDto createDailyLog(ActivityLogDailyCreationReq activityLogDailyCreationReq) {
         Activity activity = activityService.getByIdOrThrow(activityLogDailyCreationReq.getActivityId());
         ActivityLog activityLog = ActivityLogMapper.INSTANCE.dailyCreationReqToEntity(activityLogDailyCreationReq);
         activityLog.setActivity(activity);
-        List<TextItem> translationItems = textItemRepository
+        List<TextItem> textItems = textItemRepository
                 .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityLog.getActivity().getId());
 
-        Integer totalTranslationTextCount = translationItems.stream()
+        int totalTranslationTextCount = textItems.stream()
                 .mapToInt(translationItem -> translationItem.getText().length())
                 .sum();
         int percentageCompleted = calculatePercentageCompleted(totalTranslationTextCount, activity.getTotalTextCharCount());
@@ -56,10 +61,20 @@ public class ActivityLogService {
         ActivityLog activityLog = ActivityLogMapper.INSTANCE.weeklyCreationReqToEntity(activityLogWeeklyCreationReq);
         activityLog.setActivity(activity);
 
+        List<TextItem> textItems = textItemRepository
+                .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityLog.getActivity().getId());
+
+        int totalTranslationTextCount = textItems.stream()
+                .mapToInt(translationItem -> translationItem.getText().length())
+                .sum();
+        int percentageCompleted = calculatePercentageCompleted(totalTranslationTextCount, activity.getTotalTextCharCount());
         ActivityLoggingUpdateReq loggingUpdateReq = ActivityLoggingUpdateReq.builder()
+                .hoursCompleted(calculateHoursCompleted(activityLog))
+                .percentageCompleted(percentageCompleted)
                 .hoursRemaining(calculateHoursRemaining(activityLog))
                 .build();
 
+        activityLog.setPercentageCompleted(percentageCompleted);
         ActivityLog createdActivityLog = activityLogRepository.save(activityLog);
 
         activityService.updateLogging(activityLog.getActivity().getId(), loggingUpdateReq);
@@ -68,10 +83,16 @@ public class ActivityLogService {
     }
 
     private int calculatePercentageCompleted(int totalTranslationTextCount, int totalTextCharCount) {
-        return totalTextCharCount != 0 ? (int) Math.round(((double) totalTranslationTextCount / totalTextCharCount) * 100.0) : 0;
+        int percentageCompleted = totalTextCharCount != 0
+                ? (int) Math.round(((double) totalTranslationTextCount / totalTextCharCount) * 100.0)
+                : 0;
+
+        // Ensure percentageCompleted is not greater than 100
+        return Math.min(percentageCompleted, 100);
     }
 
-    public Integer calculateHoursRemaining(ActivityLog activityLog) {
+
+    public int calculateHoursRemaining(ActivityLog activityLog) {
         return (activityLog.getHoursRemaining() != null)
                 ? activityLog.getHoursRemaining()
                 : activityLog.getActivity().getHoursRemaining();
