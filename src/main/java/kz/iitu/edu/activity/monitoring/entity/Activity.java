@@ -51,6 +51,15 @@ public class Activity {
     @Column(name = "target_html", columnDefinition = "TEXT")
     private String targetHtml;
 
+    @Column(name = "hours_completed")
+    private Integer hoursCompleted;
+
+    @Column(name = "hours_remaining")
+    private Integer hoursRemaining;
+    @Column(name = "percentage_completed")
+    private Integer percentageCompleted;
+    @Column(name = "total_text_char_count")
+    private Integer totalTextCharCount;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

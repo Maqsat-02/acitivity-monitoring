@@ -1,9 +1,6 @@
 package kz.iitu.edu.activity.monitoring.service;
 
-import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityCreationReq;
-import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdateReq;
-import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
-import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
+import kz.iitu.edu.activity.monitoring.dto.activity.request.*;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
@@ -73,12 +70,13 @@ public class ActivityService {
 
         String html = docxFileToHtml(docxFile);
         List<TextItem> textItems = new HtmlSplitter().getTextItems(html);
-
+        int countTextChar = 0;
         int shownOrdinal = 1;
         for (int i = 0; i < textItems.size(); i++) {
             TextItem textItem = textItems.get(i);
             textItem.setActivity(activity);
             textItem.setOrdinal(i + 1);
+            countTextChar+=textItem.getText().length();
 
             if (!StringUtils.isBlank(textItem.getText())) {
                 textItem.setShownOrdinal(shownOrdinal);
@@ -91,6 +89,7 @@ public class ActivityService {
         }
 
         textItemRepository.saveAll(textItems);
+        activity.setTotalTextCharCount(countTextChar);
         activity.setHtml(html);
         activityRepository.save(activity);
     }
@@ -118,6 +117,12 @@ public class ActivityService {
         return entityToDto(updatedActivity);
     }
 
+    public ActivityDto updateLogging(Long activityId, ActivityLoggingUpdateReq updateReq){
+        Activity activity = getByIdOrThrow(activityId);
+        ActivityMapper.INSTANCE.updateEntityFromLoggingUpdateReq(updateReq, activity);
+        Activity updatedActivity = activityRepository.save(activity);
+        return entityToDto(updatedActivity);
+    }
     public ActivityDto updateStatusByManager(Long activityId, ActivityStatusUpdateReq statusUpdateReq) {
         Activity activity = getByIdOrThrow(activityId);
         // Check if the requested status transition is valid

@@ -1,9 +1,6 @@
 package kz.iitu.edu.activity.monitoring.mapper;
 
-import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityCreationReq;
-import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdateReq;
-import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
-import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
+import kz.iitu.edu.activity.monitoring.dto.activity.request.*;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.FirebaseUser;
@@ -28,4 +25,7 @@ public interface ActivityMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromTranslatorUpdateReq(ActivityUpdateByTranslatorReq updateReq, @MappingTarget Activity activity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromLoggingUpdateReq(ActivityLoggingUpdateReq updateReq, @MappingTarget Activity activity);
 }

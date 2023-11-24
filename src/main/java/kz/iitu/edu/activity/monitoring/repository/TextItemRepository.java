@@ -4,6 +4,7 @@ import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.TextItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,6 +33,11 @@ public interface TextItemRepository extends JpaRepository<TextItem, Long> {
             "WHERE t.id = :id " +
             "ORDER BY tr.changeOrdinal DESC")
     Optional<TextItem> findByIdWithTranslationItems(Long id);
+
+    @Query("SELECT DISTINCT ti FROM TextItem ti " +
+            "JOIN ti.translationItems tiTranslationItems " +
+            "WHERE ti.activity.id = :activityId AND SIZE(tiTranslationItems) > 0")
+    List<TextItem> findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(@Param("activityId") Long activityId);
 
     void deleteAllByActivity(Activity activity);
 }

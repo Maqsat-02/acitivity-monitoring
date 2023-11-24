@@ -5,6 +5,10 @@ import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityStatusUpdate
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByManagerReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityUpdateByTranslatorReq;
 import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
+import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogCreationReq;
+import kz.iitu.edu.activity.monitoring.dto.activityLog.response.ActivityLogDto;
+import kz.iitu.edu.activity.monitoring.entity.ActivityLog;
+import kz.iitu.edu.activity.monitoring.service.ActivityLogService;
 import kz.iitu.edu.activity.monitoring.service.ActivityService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityController {
     private final ActivityService activityService;
+    private final ActivityLogService activityLogService;
 
     @GetMapping
     @PreAuthorize(value = "hasRole('PROJECT_MANAGER')")
@@ -80,5 +85,18 @@ public class ActivityController {
     @PreAuthorize(value = "hasRole('TRANSLATOR')")
     public ActivityDto updateStatusByTranslator(@PathVariable Long activityId, @RequestBody ActivityStatusUpdateReq updateReq) {
         return activityService.updateStatusByTranslator(activityId, updateReq);
+    }
+
+    @PostMapping("/log")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR')")
+    public ActivityLogDto create(@RequestBody ActivityLogCreationReq creationReq) {
+        return activityLogService.create(creationReq);
+    }
+
+    @GetMapping("/log/{activityLogId}")
+    @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR','PROJECT_MANAGER')")
+    public ActivityLogDto getActivityLogById(@PathVariable Long activityLogId) {
+        return activityLogService.getActivityLogById(activityLogId);
     }
 }

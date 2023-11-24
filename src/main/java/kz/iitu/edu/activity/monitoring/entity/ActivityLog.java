@@ -24,10 +24,6 @@ public class ActivityLog {
     @JoinColumn(name = "activity_id", nullable = false)
     private Activity activity;
 
-    // enum
-    @Column(nullable = false)
-    private String type;
-
     @Column(name = "hours_completed", nullable = false)
     private Integer hoursCompleted;
 
@@ -42,9 +38,6 @@ public class ActivityLog {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "activityLog")
-    private List<TranslationItem> translationItems;
 
     @PrePersist
     private void setCreatedAtAndUpdatedAt() {

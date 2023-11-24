@@ -15,6 +15,7 @@ public class ActivityDto {
     private final String title;
     private final String language;
     private final String targetLanguage;
+    private final Integer totalTextCharCount;
     private final UserDto translator;
     private final String status;
     private final String targetTitle;
