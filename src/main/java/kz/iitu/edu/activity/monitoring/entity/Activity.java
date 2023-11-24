@@ -51,13 +51,13 @@ public class Activity {
     @Column(name = "target_html", columnDefinition = "TEXT")
     private String targetHtml;
 
-    @Column(name = "hours_completed")
+    @Column(name = "hours_completed", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
     private Integer hoursCompleted;
 
     @Column(name = "hours_remaining")
     private Integer hoursRemaining;
 
-    @Column(name = "percentage_completed")
+    @Column(name = "percentage_completed", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
     private Integer percentageCompleted;
 
     @Column(name = "total_text_char_count")
