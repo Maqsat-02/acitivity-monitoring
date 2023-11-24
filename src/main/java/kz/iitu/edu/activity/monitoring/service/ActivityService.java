@@ -117,12 +117,13 @@ public class ActivityService {
         return entityToDto(updatedActivity);
     }
 
-    public ActivityDto updateLogging(Long activityId, ActivityLoggingUpdateReq updateReq){
+    ActivityDto updateLogging(Long activityId, ActivityLoggingUpdateReq updateReq){
         Activity activity = getByIdOrThrow(activityId);
         ActivityMapper.INSTANCE.updateEntityFromLoggingUpdateReq(updateReq, activity);
         Activity updatedActivity = activityRepository.save(activity);
         return entityToDto(updatedActivity);
     }
+
     public ActivityDto updateStatusByManager(Long activityId, ActivityStatusUpdateReq statusUpdateReq) {
         Activity activity = getByIdOrThrow(activityId);
         // Check if the requested status transition is valid

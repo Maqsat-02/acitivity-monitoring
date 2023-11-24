@@ -87,24 +87,18 @@ public class ActivityController {
         return activityService.updateStatusByTranslator(activityId, updateReq);
     }
 
-    @PostMapping("/log/daily")
+    @PostMapping("/{activityId}/log/daily")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR')")
-    public ActivityLogDto createDailyLog(@RequestBody ActivityLogDailyCreationReq creationReq) {
-        return activityLogService.createDailyLog(creationReq);
+    public ActivityLogDto createDailyLog(@PathVariable Long activityId, @RequestBody ActivityLogDailyCreationReq creationReq) {
+        return activityLogService.createDailyLog(activityId, creationReq);
     }
 
-    @PostMapping("/log/weekly")
+    @PostMapping("/{activityId}/log/weekly")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR')")
-    public ActivityLogDto createWeeklyLog(@RequestBody ActivityLogWeeklyCreationReq creationReq) {
-        return activityLogService.createWeeklyLog(creationReq);
-    }
-
-    @GetMapping("/log/{activityLogId}")
-    @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR','PROJECT_MANAGER')")
-    public ActivityLogDto getActivityLogById(@PathVariable Long activityLogId) {
-        return activityLogService.getActivityLogById(activityLogId);
+    public ActivityLogDto createWeeklyLog(@PathVariable Long activityId, @RequestBody ActivityLogWeeklyCreationReq creationReq) {
+        return activityLogService.createWeeklyLog(activityId, creationReq);
     }
 
     @GetMapping("/{activityId}/log")

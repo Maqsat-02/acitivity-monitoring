@@ -24,21 +24,12 @@ public class ActivityLogService {
     private final TextItemRepository textItemRepository;
     private final ActivityService activityService;
 
-    public ActivityLogDto getActivityLogById(Long id) {
-        return entityToDto(getByIdOrThrow(id));
-    }
-
-    public List<ActivityLogDto> getActivityLogsByActivityId(Long activityId){
+    public ActivityLogDto createDailyLog(Long activityId, ActivityLogDailyCreationReq activityLogDailyCreationReq) {
         Activity activity = activityService.getByIdOrThrow(activityId);
-        return activity.getActivityLogs().stream().map(this::entityToDto).toList();
-    }
-
-    public ActivityLogDto createDailyLog(ActivityLogDailyCreationReq activityLogDailyCreationReq) {
-        Activity activity = activityService.getByIdOrThrow(activityLogDailyCreationReq.getActivityId());
         ActivityLog activityLog = ActivityLogMapper.INSTANCE.dailyCreationReqToEntity(activityLogDailyCreationReq);
         activityLog.setActivity(activity);
         List<TextItem> textItems = textItemRepository
-                .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityLog.getActivity().getId());
+                .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityId);
 
         int totalTranslationTextCount = textItems.stream()
                 .mapToInt(translationItem -> translationItem.getText().length())
@@ -57,13 +48,13 @@ public class ActivityLogService {
         return entityToDto(createdActivityLog);
     }
 
-    public ActivityLogDto createWeeklyLog(ActivityLogWeeklyCreationReq activityLogWeeklyCreationReq) {
-        Activity activity = activityService.getByIdOrThrow(activityLogWeeklyCreationReq.getActivityId());
+    public ActivityLogDto createWeeklyLog(Long activityId, ActivityLogWeeklyCreationReq activityLogWeeklyCreationReq) {
+        Activity activity = activityService.getByIdOrThrow(activityId);
         ActivityLog activityLog = ActivityLogMapper.INSTANCE.weeklyCreationReqToEntity(activityLogWeeklyCreationReq);
         activityLog.setActivity(activity);
 
         List<TextItem> textItems = textItemRepository
-                .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityLog.getActivity().getId());
+                .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityId);
 
         int totalTranslationTextCount = textItems.stream()
                 .mapToInt(translationItem -> translationItem.getText().length())
@@ -83,6 +74,11 @@ public class ActivityLogService {
         return entityToDto(createdActivityLog);
     }
 
+    public List<ActivityLogDto> getActivityLogsByActivityId(Long activityId){
+        Activity activity = activityService.getByIdOrThrow(activityId);
+        return activity.getActivityLogs().stream().map(this::entityToDto).toList();
+    }
+
     private int calculatePercentageCompleted(int totalTranslationTextCount, int totalTextCharCount) {
         int percentageCompleted = totalTextCharCount != 0
                 ? (int) Math.round(((double) totalTranslationTextCount / totalTextCharCount) * 100.0)
@@ -91,7 +87,6 @@ public class ActivityLogService {
         // Ensure percentageCompleted is not greater than 100
         return Math.min(percentageCompleted, 100);
     }
-
 
     public int calculateHoursRemaining(ActivityLog activityLog) {
         return (activityLog.getHoursRemaining() != null)

@@ -9,8 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class ActivityLoggingUpdateReq {
     private final Integer hoursCompleted;
-
     private final Integer hoursRemaining;
-
     private final Integer percentageCompleted;
 }
