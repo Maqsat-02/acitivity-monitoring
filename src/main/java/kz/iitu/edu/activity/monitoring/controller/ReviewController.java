@@ -1,14 +1,12 @@
 package kz.iitu.edu.activity.monitoring.controller;
 
+import kz.iitu.edu.activity.monitoring.dto.remark.request.ReviewStatusUpdateReq;
 import kz.iitu.edu.activity.monitoring.dto.review.response.ReviewDto;
 import kz.iitu.edu.activity.monitoring.service.ReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class ReviewController {
 
     /**
      * This endpoint is optional. Implement additional history and traceability by using this endpoint if necessary.
-      */
+     */
     @GetMapping("/activity/{activityId}")
     @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR','PROJECT_MANAGER')")
     public List<ReviewDto> getReviewsByActivityId(@PathVariable Long activityId, Pageable pageable) {
@@ -43,5 +41,11 @@ public class ReviewController {
     @PreAuthorize(value = "hasAnyRole('TRANSLATOR', 'CHIEF_EDITOR','PROJECT_MANAGER')")
     public ReviewDto getReviewById(@PathVariable Long reviewId) {
         return reviewService.getReviewById(reviewId);
+    }
+
+    @PutMapping("/{reviewId}/update/status")
+    @PreAuthorize(value = "hasRole('CHIEF_EDITOR')")
+    public ReviewDto updateStatusByChiefEditor(@PathVariable Long reviewId, @RequestBody ReviewStatusUpdateReq updateReq) {
+        return reviewService.updateReviewStatus(reviewId, updateReq);
     }
 }

@@ -6,6 +6,8 @@ import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +18,10 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     List<Activity> findAllByProject(Project project);
     List<Activity> findAllByTranslatorId(String translatorId);
     List<Activity> findActivitiesByIsLoggedTodayTrueOrderByActivityLogsCreatedAt();
+    @Query("SELECT CASE WHEN COUNT(ti) > 0 THEN true ELSE false END " +
+            "FROM Activity a " +
+            "JOIN a.textItems ti " +
+            "LEFT JOIN ti.translationItems tr " +
+            "WHERE a.id = :activityId AND tr IS NULL")
+    boolean hasUntranslatedTextItems(@Param("activityId") Long activityId);
 }
