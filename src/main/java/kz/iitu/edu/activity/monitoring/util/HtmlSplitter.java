@@ -103,10 +103,11 @@ public class HtmlSplitter {
     private List<String> splitTextIntoSentences(String text) {
         SentenceModel sentenceDetectorModel;
 
-        ;
         try {
             sentenceDetectorModel = new SentenceModel(
-                    new ClassPathResource("/apache-nlp-model/en-sent.bin").getInputStream()
+                    Objects.requireNonNull(
+                            getClass().getClassLoader().getResourceAsStream("en-sent.bin")
+                    )
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
