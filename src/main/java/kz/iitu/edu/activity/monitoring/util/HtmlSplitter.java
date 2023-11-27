@@ -13,8 +13,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -100,7 +102,11 @@ public class HtmlSplitter {
     private List<String> splitTextIntoSentences(String text) {
         SentenceModel sentenceDetectorModel;
         try {
-            sentenceDetectorModel = new SentenceModel(new FileInputStream("src/main/resources/apache-nlp-model/en-sent.bin"));
+            sentenceDetectorModel = new SentenceModel(
+                    Objects.requireNonNull(
+                            ClassLoader.getSystemResourceAsStream("apache-nlp-model/en-sent.bin")
+                    )
+            );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
