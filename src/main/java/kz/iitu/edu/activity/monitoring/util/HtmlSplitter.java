@@ -9,6 +9,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
@@ -101,11 +102,11 @@ public class HtmlSplitter {
 
     private List<String> splitTextIntoSentences(String text) {
         SentenceModel sentenceDetectorModel;
+
+        ;
         try {
             sentenceDetectorModel = new SentenceModel(
-                    Objects.requireNonNull(
-                            ClassLoader.getSystemResourceAsStream("apache-nlp-model/en-sent.bin")
-                    )
+                    new ClassPathResource("/apache-nlp-model/en-sent.bin").getInputStream()
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
