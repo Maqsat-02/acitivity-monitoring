@@ -88,7 +88,7 @@ public class ActivityLogService {
         return activity.getActivityLogs().stream().map(this::entityToDto).toList();
     }
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 360000)
     public void scheduledCheckingActivityLog() {
         List<Activity> activities = activityService.getActivitiesIsLoggedTodayTrue();
         activities = activities.stream().
