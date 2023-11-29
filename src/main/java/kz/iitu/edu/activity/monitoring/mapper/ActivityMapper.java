@@ -17,6 +17,7 @@ public interface ActivityMapper {
     @Mapping(source = "translator", target = "translator")
     @Mapping(source = "activity.hoursCompleted", target = "totalHoursCompleted")
     @Mapping(expression = "java(activity.getTotalTextCharCount() != null)", target = "docxUploaded")
+    @Mapping(expression = "activity.isLoggedToday", target = "isLoggedToday")
     ActivityDto entitiesToDto(Activity activity, FirebaseUser translator);
 
     Activity creationReqToEntity(ActivityCreationReq creationReq);
