@@ -147,7 +147,7 @@ public class ActivityLogService {
     //    @Transactional
     public LocalDateTime getLastLogCreatedAt(Activity activity) {
         List<ActivityLog> activityLogs = activity.getActivityLogs();
-        if (activityLogs != null) {
+        if (activityLogs != null && !activityLogs.isEmpty()) {
             return activityLogs.get(activityLogs.size() - 1).getCreatedAt();
         }
         return null;
