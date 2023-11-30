@@ -68,6 +68,7 @@ public class ActivityService {
         activity.setStatus(ActivityStatus.TODO.name());
         activity.setHoursCompleted(0);
         activity.setPercentageCompleted(0);
+        activity.setIsLoggedToday(false);
         Activity createdActivity = activityRepository.save(activity);
         return ActivityMapper.INSTANCE.entitiesToDto(createdActivity, translator);
     }
