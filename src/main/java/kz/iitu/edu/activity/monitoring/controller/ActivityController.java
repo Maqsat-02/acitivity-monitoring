@@ -33,7 +33,7 @@ public class ActivityController {
     }
 
     @GetMapping("/{activityId}")
-    @PreAuthorize(value = "hasAnyRole('PROJECT_MANAGER', 'CHIEF_EDITOR')")
+    @PreAuthorize(value = "hasAnyRole('PROJECT_MANAGER', 'TRANSLATOR', 'CHIEF_EDITOR')")
     public ActivityDto getById(@PathVariable Long activityId) {
         return activityService.getById(activityId);
     }
