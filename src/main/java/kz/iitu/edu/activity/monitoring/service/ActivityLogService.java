@@ -1,57 +1,45 @@
 package kz.iitu.edu.activity.monitoring.service;
 
-import jakarta.transaction.Transactional;
 import kz.iitu.edu.activity.monitoring.dto.activity.request.ActivityLoggingUpdateReq;
-import kz.iitu.edu.activity.monitoring.dto.activity.response.ActivityDto;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogDailyCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.request.ActivityLogWeeklyCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.activityLog.response.ActivityLogDto;
 import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.ActivityLog;
-import kz.iitu.edu.activity.monitoring.entity.TextItem;
 import kz.iitu.edu.activity.monitoring.exception.EntityNotFoundException;
 import kz.iitu.edu.activity.monitoring.mapper.ActivityLogMapper;
 import kz.iitu.edu.activity.monitoring.repository.ActivityLogRepository;
-import kz.iitu.edu.activity.monitoring.repository.TextItemRepository;
+import kz.iitu.edu.activity.monitoring.util.ActivityCalculationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ActivityLogService {
     private final ActivityLogRepository activityLogRepository;
-    private final TextItemRepository textItemRepository;
     private final ActivityService activityService;
+    private final ActivityCalculationUtil calculationUtil;
 
     public ActivityLogDto createDailyLog(Long activityId, ActivityLogDailyCreationReq activityLogDailyCreationReq) {
         Activity activity = activityService.getByIdOrThrow(activityId);
         activity.setIsLoggedToday(true);
         ActivityLog activityLog = ActivityLogMapper.INSTANCE.dailyCreationReqToEntity(activityLogDailyCreationReq);
         activityLog.setActivity(activity);
-        List<TextItem> textItems = textItemRepository
-                .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityId);
 
-        int totalTranslationTextCount = textItems.stream()
-                .mapToInt(translationItem -> translationItem.getText().length())
-                .sum();
-        int percentageCompleted = calculatePercentageCompleted(totalTranslationTextCount, activity.getTotalTextCharCount());
+        int percentageCompleted = calculationUtil.calculatePercentageCompleted(activity);
         ActivityLoggingUpdateReq loggingUpdateReq = ActivityLoggingUpdateReq.builder()
                 .hoursCompleted(calculateHoursCompleted(activityLog))
                 .percentageCompleted(percentageCompleted)
                 .isLoggedToday(activity.getIsLoggedToday())
                 .build();
-
         activityLog.setPercentageCompleted(percentageCompleted);
+
         ActivityLog createdActivityLog = activityLogRepository.save(activityLog);
-
         activityService.updateLogging(activityLog.getActivity().getId(), loggingUpdateReq);
-
         return entityToDto(createdActivityLog);
     }
 
@@ -61,13 +49,7 @@ public class ActivityLogService {
         ActivityLog activityLog = ActivityLogMapper.INSTANCE.weeklyCreationReqToEntity(activityLogWeeklyCreationReq);
         activityLog.setActivity(activity);
 
-        List<TextItem> textItems = textItemRepository
-                .findTextItemsByActivityIdAndTranslationItemsCountGreaterThanZero(activityId);
-
-        int totalTranslationTextCount = textItems.stream()
-                .mapToInt(translationItem -> translationItem.getText().length())
-                .sum();
-        int percentageCompleted = calculatePercentageCompleted(totalTranslationTextCount, activity.getTotalTextCharCount());
+        int percentageCompleted = calculationUtil.calculatePercentageCompleted(activity);
         ActivityLoggingUpdateReq loggingUpdateReq = ActivityLoggingUpdateReq.builder()
                 .hoursCompleted(calculateHoursCompleted(activityLog))
                 .percentageCompleted(percentageCompleted)
@@ -101,15 +83,6 @@ public class ActivityLogService {
                     .build();
             activityService.updateLogging(activity.getId(), loggingUpdateReq);
         }
-    }
-
-    private int calculatePercentageCompleted(int totalTranslationTextCount, int totalTextCharCount) {
-        int percentageCompleted = totalTextCharCount != 0
-                ? (int) Math.round(((double) totalTranslationTextCount / totalTextCharCount) * 100.0)
-                : 0;
-
-        // Ensure percentageCompleted is not greater than 100
-        return Math.min(percentageCompleted, 100);
     }
 
     public int calculateHoursRemaining(ActivityLog activityLog) {

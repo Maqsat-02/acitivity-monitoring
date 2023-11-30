@@ -3,12 +3,14 @@ package kz.iitu.edu.activity.monitoring.service;
 import kz.iitu.edu.activity.monitoring.dto.textitem.request.TranslationItemCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.textitem.response.TextTranslationItemDto;
 import kz.iitu.edu.activity.monitoring.dto.textitem.response.TranslationItemDto;
+import kz.iitu.edu.activity.monitoring.entity.Activity;
 import kz.iitu.edu.activity.monitoring.entity.TextItem;
 import kz.iitu.edu.activity.monitoring.entity.TranslationItem;
 import kz.iitu.edu.activity.monitoring.exception.EntityNotFoundException;
 import kz.iitu.edu.activity.monitoring.mapper.TextTranslationItemMapper;
 import kz.iitu.edu.activity.monitoring.repository.TextItemRepository;
 import kz.iitu.edu.activity.monitoring.repository.TranslationItemRepository;
+import kz.iitu.edu.activity.monitoring.util.ActivityCalculationUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ public class TextTranslationItemService {
     private final TranslationItemRepository translationItemRepository;
 
     private final ActivityService activityService;
+    private final ActivityCalculationUtil calculationUtil;
 
     public List<TextTranslationItemDto> getAll(Long activityId) {
         activityService.getByIdOrThrow(activityId);
@@ -46,6 +49,12 @@ public class TextTranslationItemService {
                 .text(creationReq.getTranslationText())
                 .build();
         TranslationItem savedTranslationItem = translationItemRepository.save(translationItem);
+
+        Activity activity = textItem.getActivity();
+        int percentageCompleted = calculationUtil.calculatePercentageCompleted(activity);
+        activity.setPercentageCompleted(percentageCompleted);
+        activityService.save(activity);
+
         return TextTranslationItemMapper.INSTANCE.entityToDto(savedTranslationItem);
     }
 

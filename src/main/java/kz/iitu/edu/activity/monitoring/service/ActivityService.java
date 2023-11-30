@@ -132,6 +132,10 @@ public class ActivityService {
         return entityToDto(updatedActivity);
     }
 
+    void save(Activity activity) {
+        activityRepository.save(activity);
+    }
+
     public ActivityDto updateStatusByManager(Long activityId, ActivityStatusUpdateReq statusUpdateReq) {
         Activity activity = getByIdOrThrow(activityId);
         // Check if the requested status transition is valid
