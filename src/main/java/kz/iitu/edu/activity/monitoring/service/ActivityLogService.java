@@ -88,12 +88,12 @@ public class ActivityLogService {
         return activity.getActivityLogs().stream().map(this::entityToDto).toList();
     }
 
-    @Scheduled(fixedDelay = 360000)
+    @Scheduled(fixedDelay = 300000)
     public void scheduledCheckingActivityLog() {
         List<Activity> activities = activityService.getActivitiesIsLoggedTodayTrue();
         activities = activities.stream().
                 filter(activity -> hasDayChanged(getLastLogCreatedAt(activity)))
-                .collect(Collectors.toList());
+                .toList();
 
         for (Activity activity : activities) {
             ActivityLoggingUpdateReq loggingUpdateReq = ActivityLoggingUpdateReq.builder()
@@ -135,7 +135,7 @@ public class ActivityLogService {
         }
 
         LocalDateTime currentDateTime = LocalDateTime.now();
-        if (dateTimeToCheck.isEqual(currentDateTime)) {
+        if (dateTimeToCheck.getDayOfMonth() == currentDateTime.getDayOfMonth()) {
             System.out.println("The specific date is today.");
             return false;
         } else {
