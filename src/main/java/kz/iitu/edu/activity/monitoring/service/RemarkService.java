@@ -2,10 +2,7 @@ package kz.iitu.edu.activity.monitoring.service;
 
 import kz.iitu.edu.activity.monitoring.dto.remark.request.RemarkCreationReq;
 import kz.iitu.edu.activity.monitoring.dto.remark.response.RemarkDto;
-import kz.iitu.edu.activity.monitoring.entity.Remark;
-import kz.iitu.edu.activity.monitoring.entity.Review;
-import kz.iitu.edu.activity.monitoring.entity.TextItem;
-import kz.iitu.edu.activity.monitoring.entity.TranslationItem;
+import kz.iitu.edu.activity.monitoring.entity.*;
 import kz.iitu.edu.activity.monitoring.exception.EntityNotFoundException;
 import kz.iitu.edu.activity.monitoring.mapper.RemarkMapper;
 import kz.iitu.edu.activity.monitoring.repository.RemarkRepository;
@@ -33,6 +30,8 @@ public class RemarkService {
 
         Review review = reviewRepository.findFirstByActivityOrderByCreatedAtDesc(textItem.getActivity())
                 .orElseThrow(() -> new EntityNotFoundException("Review of the activity not found"));
+        review.setRemarkCount(review.getRemarkCount() + 1);
+        reviewRepository.save(review);
         Remark remark = Remark.builder()
                 .review(review)
                 .translationItem(latestTranslationItem)

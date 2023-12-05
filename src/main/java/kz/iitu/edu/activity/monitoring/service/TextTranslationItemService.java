@@ -60,7 +60,7 @@ public class TextTranslationItemService {
 
     public List<TranslationItemDto> getTranslationItemHistory(Long textItemId) {
         TextItem textItem = textItemRepository.findByIdWithTranslationItems(textItemId)
-                .orElseThrow(() -> new EntityNotFoundException("TextItem ", textItemId));
+                .orElseThrow(() -> new EntityNotFoundException("TextItem", textItemId));
         return textItem.getTranslationItems().stream()
                 .map(TextTranslationItemMapper.INSTANCE::entityToDto)
                 .collect(Collectors.toList());
@@ -68,7 +68,7 @@ public class TextTranslationItemService {
 
     TextItem getByIdWithLatestTranslationItemOrThrow(Long textItemId) {
         return textItemRepository.findByIdWithLatestTranslationItem(textItemId)
-                .orElseThrow(() -> new EntityNotFoundException("TextItem ", textItemId));
+                .orElseThrow(() -> new EntityNotFoundException("TextItem", textItemId));
     }
 
     Optional<TranslationItem> getLatestTranslationItem(TextItem textItem) {
