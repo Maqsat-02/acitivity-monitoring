@@ -1,20 +1,15 @@
 package kz.iitu.edu.activity.monitoring.util;
 
-import kz.iitu.edu.activity.monitoring.dto.common.response.ErrorResponseDto;
 import kz.iitu.edu.activity.monitoring.entity.TextItem;
-import kz.iitu.edu.activity.monitoring.exception.ApiException;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -112,7 +107,17 @@ public class HtmlSplitter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        // E.g.: "3. Birds sang melodies that seemed to echo from another realm."
+        // Sentence detector would wrongly split it into "3." and "Birds sang melodies that seemed to echo from another realm."
+        // Handle this
+        if (text.matches("^\\d\\..+\\.$")) {
+            return List.of(text);
+        }
+
         SentenceDetectorME sentenceDetector = new SentenceDetectorME(sentenceDetectorModel);
-        return Arrays.asList(sentenceDetector.sentDetect(text));
+
+        String[] sentences = sentenceDetector.sentDetect(text);
+        return Arrays.asList(sentences);
     }
 }
