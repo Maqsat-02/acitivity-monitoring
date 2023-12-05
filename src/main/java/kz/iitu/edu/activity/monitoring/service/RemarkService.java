@@ -13,7 +13,9 @@ import kz.iitu.edu.activity.monitoring.repository.ReviewRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,9 +44,11 @@ public class RemarkService {
 
     public List<RemarkDto> getRemarks(Long textItemId) {
         TextItem textItem = textTranslationItemService.getByIdWithLatestTranslationItemOrThrow(textItemId);
-        TranslationItem latestTranslationItem = textTranslationItemService.getLatestTranslationItem(textItem)
-                .orElseThrow(() -> new EntityNotFoundException("Latest TranslationItem of TextItem " + textItemId + " not found"));
-        return remarkRepository.findAllByTranslationItemOrderByCreatedAtDesc(latestTranslationItem).stream()
+        Optional<TranslationItem> latestTranslationItem = textTranslationItemService.getLatestTranslationItem(textItem);
+        if (latestTranslationItem.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return remarkRepository.findAllByTranslationItemOrderByCreatedAtDesc(latestTranslationItem.get()).stream()
                 .map(this::entityToDto)
                 .collect(Collectors.toList());
     }
