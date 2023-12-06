@@ -22,6 +22,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             "FROM Activity a " +
             "JOIN a.textItems ti " +
             "JOIN ti.translationItems tr " +
-            "WHERE a.id = :activityId AND tr IS NULL")
+            "WHERE a.id = :activityId AND SIZE(tr) = 0")
     boolean hasUntranslatedTextItems(@Param("activityId") Long activityId);
 }

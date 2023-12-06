@@ -68,7 +68,7 @@ public class ReviewService {
         ReviewStatus newStatus = ReviewStatus.valueOf(updateReq.getStatus());
 
         if ((isValidNewStatus(currentStatus, newStatus) &&
-                (newStatus == ReviewStatus.OK && !activityRepository.hasUntranslatedTextItems(review.getActivity().getId())))) {
+                (newStatus == ReviewStatus.OK && activityRepository.hasUntranslatedTextItems(review.getActivity().getId())))) {
             throw new InvalidStatusTransitionException(Role.CHIEF_EDITOR.name(), "Review", currentStatus.name(), newStatus.name());
         }
 
