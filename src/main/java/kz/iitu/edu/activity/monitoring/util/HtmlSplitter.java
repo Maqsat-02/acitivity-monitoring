@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -98,12 +99,9 @@ public class HtmlSplitter {
     private List<String> splitTextIntoSentences(String text) {
         SentenceModel sentenceDetectorModel;
 
-        try {
-            sentenceDetectorModel = new SentenceModel(
-                    Objects.requireNonNull(
-                            getClass().getClassLoader().getResourceAsStream("en-sent.bin")
-                    )
-            );
+        try (InputStream enSentBinIS = getClass().getClassLoader().getResourceAsStream("en-sent.bin")) {
+            Objects.requireNonNull(enSentBinIS);
+            sentenceDetectorModel = new SentenceModel(enSentBinIS);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
